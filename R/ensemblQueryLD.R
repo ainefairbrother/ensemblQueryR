@@ -1,9 +1,23 @@
-
-
-
-
-# main function that queries with one rsid, outputs all SNPs in LD with the query
-query.ensemble.ld.with.snp = function(rsid, r2=0.8){
+#' Function to query Ensembl LD data with a single rsID
+#'
+#' @param rsid
+#' @param r2
+#' @param d.prime
+#' @param window.size
+#' @param pop
+#'
+#' @return data.frame with 5 columns:
+#' `query` (original query SNP),
+#' `snp_in_ld` (all SNPs in LD within parameters specified),
+#' `r2` (the r-squared value for query-snp_in_ld),
+#' `d_prime` (the D' value for query-snp_in_ld),
+#' `population_name` (the population LD was calculated from)
+#' @export
+#'
+#' @examples
+#' query.ensemble.ld.with.snp(rsid="rs3851179", r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR")
+#'
+ensemblQueryLDwithSNP = function(rsid, r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR"){
 
   # load libs
   require(httr)
@@ -28,7 +42,7 @@ query.ensemble.ld.with.snp = function(rsid, r2=0.8){
   #--------------------------------- run query -------------------------------
 
   server <- "https://rest.ensembl.org"
-  ext <- paste0("/ld/human/",rsid,"/1000GENOMES:phase_3:EUR?d_prime=0.8;window_size=500;r2=",r2)
+  ext <- paste0("/ld/human/",rsid,"/",pop,"?d_prime=",d.prime,";window_size=",window.size,";r2=",r2)
 
   r <- GET(paste(server, ext, sep = ""), content_type("application/json"))
 
@@ -46,8 +60,8 @@ query.ensemble.ld.with.snp = function(rsid, r2=0.8){
       t() %>%
       `rownames<-`(NULL) %>%
       as.data.frame() %>%
-      dplyr::rename(query=variation1, snp.in.ld=variation2) %>%
-      dplyr::relocate(query, snp.in.ld, r2, d_prime, population_name) %>%
+      dplyr::rename(query=variation1, snp_in_ld=variation2) %>%
+      dplyr::relocate(query, snp_in_ld, r2, d_prime, population_name) %>%
       dplyr::mutate(query=rsid) %>%
       return()
 
@@ -56,105 +70,127 @@ query.ensemble.ld.with.snp = function(rsid, r2=0.8){
     res.temp %>%
       data.frame() %>%
       dplyr::arrange(r2) %>%
-      dplyr::rename(query=variation1, snp.in.ld=variation2) %>%
-      dplyr::relocate(query, snp.in.ld, r2, d_prime, population_name) %>%
+      dplyr::rename(query=variation1, snp_in_ld=variation2) %>%
+      dplyr::relocate(query, snp_in_ld, r2, d_prime, population_name) %>%
       return()
 
   }
 }
 
-# function that runs lapply, applying query.ensemble.ld.with.snp to a list of SNPs,
-# outputs a table containing all SNPs in LD with all query SNPs in rsid.list, or NA row if no SNPs in LD found
-apply.query.ensemble.ld.with.snp.to.list = function(rsid.list, r2=0.8){
+#' Function to apply `ensemblQueryLDwithSNP` to a list of SNPs of length<1000
+#' Outputs a table containing all SNPs in LD with all query SNPs in rsid.list.
+#' Outputs NA row if no SNPs in LD found.
+#'
+#' @param rsid.list
+#' @param r2
+#' @param d.prime
+#' @param window.size
+#' @param pop
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+#' ensemblQueryLDwithSNPlist(rsid.list=c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870"),
+#'                           r2=0.8,
+#'                           d.prime=0.8,
+#'                           window.size=500,
+#'                           pop="1000GENOMES:phase_3:EUR")
+#'
+ensemblQueryLDwithSNPlist = function(rsid.list, r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR"){
 
-  lapply(X=rsid.list, FUN=query.ensemble.ld.with.snp, r2=r2) %>%
-    do.call("rbind", .) %>%
-    return()
+  # max query length ensembl REST API will accept
+  max.query.len=1000
+
+  if(length(rsid.list)<=max.query.len){
+    lapply(X=rsid.list, FUN=ensemblQueryLDwithSNP, r2=r2, d.prime=d.prime, window.size=window.size, pop=pop) %>%
+      do.call("rbind", .) %>%
+      return()
+  } else{
+    print(paste("Query length=", length(rsid.list), "which is longer than the max. query length ensembl REST API accepts. Please use ensemblQueryLDwithLargeSNPdf() instead."))
+  }
 
 }
 
-# employs apply.query.ensemble.ld.with.snp.to.list to make this work with an entire results dataframe,
+# employs ensemblQueryLDwithSNPlist to make this work with an entire results dataframe,
 # splits a df by phenotype, queries each one (splitting if rsid lists are >1000), then returns a df for each phenotype
 # final output is a df of all input rsid, with all SNPs in LD with those, with accompanying phenotype labels
 # in.table needs minimum cols: phenotype, rsID
-apply.query.ensemble.ld.with.snp.to.df = function(in.table){
+#'
+#' @param in.table
+#' @param r2
+#' @param d.prime
+#' @param window.size
+#' @param pop
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+#'data.frame(rsid=rep(c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870"), 500)) %>%
+#'    ensemblQueryLDwithLargeSNPdf(in.table=.,
+#'                                 r2=0.8,
+#'                                 d.prime=0.8,
+#'                                 window.size=500,
+#'                                 pop="1000GENOMES:phase_3:EUR")
+#'
+ensemblQueryLDwithLargeSNPdf = function(in.table, r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR"){
 
-  # # TEST
-  # in.table = meta %>%
-  #   dplyr::filter(diagnosis=="Control") %>%
-  #   dplyr::distinct()
+  # max query length ensembl REST API will accept
+  max.query.len=1000
 
-  exp.res.split.by.pheno = in.table %>%
-    dplyr::select(diagnosis, phenotype, rsId) %>%
-    tidyr::drop_na(rsId) %>%
-    split(., f=.$phenotype)
+  # test for length of query
+  # if query is longer than 999, add id every 500 rows and split into multiple queries
+  if(length(in.table$rsid)>=max.query.len){
 
-  out.list = vector("list", length(exp.res.split.by.pheno))
-  names(out.list) = names(exp.res.split.by.pheno)
-  max.query.len = 1000
+    print(paste("Query consists of", length(in.table$rsid), "rsid, so splitting query and running in chunks..."))
 
-  for(i in 1:length(exp.res.split.by.pheno)){
+    in.table = in.table %>%
+      dplyr::mutate(id = rep(seq(n()), each = 500, length = n())) %>%
+      dplyr::group_by(id) %>%
+      dplyr::group_split()
 
-    print(paste("Running query number", i, "of", length(exp.res.split.by.pheno)))
+    # define empty vector to hold query res
+    out.list = vector("list", length(in.table))
 
-    # run the query normally for shorter queries
-    if( length(exp.res.split.by.pheno[[i]] %>% dplyr::pull(rsId)) <= max.query.len ){
+    # the queries then have to be run sequentially, not in parallel/or using lapply as the REST API will only handle sequential queries
+    for(i in 1:length(in.table)){
 
-      out.list[[i]] = exp.res.split.by.pheno[[i]] %>%
-        dplyr::pull(rsId) %>%
-        apply.query.ensemble.ld.with.snp.to.list(rsid.list=.)
+      print(paste("Running query number", i, "of", length(in.table)))
 
-      # split the query if longer than 1000, store the split queries in temp.out.list, then stick back together and store in out.list
-      # because the ensembl API doesn't accept n>1000 queries
-    } else{
+      # run query
+      if( length(in.table[[i]] %>% dplyr::pull(rsid)) <= max.query.len ){
 
-      temp = exp.res.split.by.pheno[[i]] %>%
-        dplyr::pull(rsId) %>%
-        split(., ceiling(seq_along(.)/max.query.len))
+        out.list[[i]] = in.table[[i]] %>%
+          dplyr::pull(rsid) %>%
+          ensemblQueryLDwithSNPlist(rsid.list=., r2=r2, d.prime=d.prime, window.size=window.size, pop=pop)
 
-      temp.out.list = vector("list", length(temp))
-
-      print(paste("Query too long, splitting into", length(temp), "chunks"))
-
-      for(j in 1:length(temp)){
-
-        print(paste("Running sub-query number", j))
-
-        temp.out.list[[j]] = temp[[j]] %>%
-          apply.query.ensemble.ld.with.snp.to.list(rsid.list=.)
       }
-
-      out.list[[i]] = temp.out.list %>%
-        purrr::discard(., ~nrow(.) == 0) %>%
-        do.call("rbind", .)
-
     }
-  }
 
-  print("Returning results table... ")
-  out.list %>%
-    lapply(X=., FUN=function(x){x %>% dplyr::mutate_all(as.character)}) %>%
-    dplyr::bind_rows(., .id = "phenotype") %>%
-    return(.)
+    # bind res together and return
+    print("Returning results table... ")
+    out.list %>%
+      lapply(X=., FUN=function(x){x %>% dplyr::mutate_all(as.character)}) %>%
+      purrr::discard(., ~nrow(.) == 0) %>%
+      do.call("rbind", .) %>%
+      dplyr::mutate(r2 = as.numeric(r2),
+                    d_prime = as.numeric(d_prime)) %>%
+      tibble::tibble() %>%
+      return(.)
 
-}
+    # otherwise, run query as usual
+  } else{
 
+    print(paste("Query consists of", length(in.table$rsid), "rsid, so running a single query..."))
 
-
-
-#### -------------- implement functions -------------- ####
-
-# start_time = Sys.time()
-#
-#
-# vroom::vroom(
-#   "/home/abrowne/projects/amppd_analysis/data/MatrixEQTL_output/PP_PD_mega_analysis/log10/aggregated_tables/matrixeqtl_mega_res_aggregated_FDR=0.05_filter_peaksnp_varid_justPEAKSNP_annot_991_map_alan_aminah_res.csv", guess_max = Inf, show_col_types = FALSE) %>%
-#   dplyr::filter(diagnosis=="Control") %>%
-#   apply.query.ensemble.ld.with.snp.to.df(in.table=.) %>%
-#   vroom::vroom_write(x=., file="/home/abrowne/projects/amppd_analysis/data/ensemble_LD_out/matrixeqtl_mega_res_aggregated_FDR=0.05_filter_peaksnp_varid_justPEAKSNP_Control.csv", delim=",")
-#
-#
-# end_time = Sys.time()
-# time_taken = end_time - start_time
-# print(paste(time_taken, "taken to process", num.snps, "rsIDs"))
-
+    in.table %>%
+      dplyr::pull(rsid) %>%
+      ensemblQueryLDwithSNPlist(rsid.list=., r2=r2, d.prime=d.prime, window.size=window.size, pop=pop) %>%
+      dplyr::mutate(r2 = as.numeric(r2),
+                    d_prime = as.numeric(d_prime)) %>%
+      tibble::tibble() %>%
+      return(.)
+  }}
