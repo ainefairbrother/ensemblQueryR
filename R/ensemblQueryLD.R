@@ -29,6 +29,7 @@ ensemblQueryLDwithSNP = function(rsid, r2=0.8, d.prime=0.8, window.size=500, pop
   require(tidyr)
   require(purrr)
   require(vroom)
+  require(magrittr)
 
   #--------------------------------- get pops --------------------------------
 
