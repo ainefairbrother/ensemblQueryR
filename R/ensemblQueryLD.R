@@ -12,23 +12,32 @@
 #' `r2` (the r-squared value for query-snp_in_ld),
 #' `d_prime` (the D' value for query-snp_in_ld),
 #' `population_name` (the population LD was calculated from)
+#'
+#' @import httr
+#' @import xml2
+#' @import jsonlite
+#' @import dplyr
+#' @import tidyr
+#' @import vroom
+#' @import magrittr
+#'
 #' @export
 #'
 #' @examples
 #' ensemblQueryLDwithSNP(rsid="rs3851179", r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR")
 ensemblQueryLDwithSNP = function(rsid, r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR"){
 
-  # load libs
-  require(httr)
-  require(xml2)
-  if( !("tidyverse" %in% (.packages())) ){
-    require(jsonlite)
-  }
-  require(dplyr)
-  require(tidyr)
-  require(purrr)
-  require(vroom)
-  require(magrittr)
+  # # load libs
+  # require(httr)
+  # require(xml2)
+  # if( !("tidyverse" %in% (.packages())) ){
+  #   require(jsonlite)
+  # }
+  # require(dplyr)
+  # require(tidyr)
+  # require(purrr)
+  # require(vroom)
+  # require(magrittr)
 
   #--------------------------------- get pops --------------------------------
 
@@ -88,7 +97,10 @@ ensemblQueryLDwithSNP = function(rsid, r2=0.8, d.prime=0.8, window.size=500, pop
 #' @param pop
 #'
 #' @return
+#'
 #' @export
+#'
+#' @import magrittr
 #'
 #' @examples
 #'
@@ -99,8 +111,6 @@ ensemblQueryLDwithSNP = function(rsid, r2=0.8, d.prime=0.8, window.size=500, pop
 #'                           pop="1000GENOMES:phase_3:EUR")
 #'
 ensemblQueryLDwithSNPlist = function(rsid.list, r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR"){
-
-  library(magrittr)
 
   # max query length ensembl REST API will accept
   max.query.len=1000
@@ -127,6 +137,11 @@ ensemblQueryLDwithSNPlist = function(rsid.list, r2=0.8, d.prime=0.8, window.size
 #' @param pop
 #'
 #' @return
+#'
+#' @import purrr
+#' @import magrittr
+#' @import dplyr
+#'
 #' @export
 #'
 #' @examples
@@ -139,9 +154,9 @@ ensemblQueryLDwithSNPlist = function(rsid.list, r2=0.8, d.prime=0.8, window.size
 #'                                 pop="1000GENOMES:phase_3:EUR")
 ensemblQueryLDwithLargeSNPdf = function(in.table, r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR"){
 
-  library(dplyr)
-  library(magrittr)
-  library(purrr)
+  # library(dplyr)
+  # library(magrittr)
+  # library(purrr)
 
   # max query length ensembl REST API will accept
   max.query.len=1000
