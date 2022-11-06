@@ -11,7 +11,7 @@ The goal of ensemblQueryR is to ...
 You can install the development version of ensemblQueryR like so:
 
 ``` r
-# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+# remotes::install_github("ainefairbrother/ensemblQueryR")
 ```
 
 ## Example
