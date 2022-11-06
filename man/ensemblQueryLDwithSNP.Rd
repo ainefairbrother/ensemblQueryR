@@ -28,5 +28,4 @@ Function to query Ensembl LD data with a single rsID
 }
 \examples{
 query.ensemble.ld.with.snp(rsid="rs3851179", r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR")
-
 }

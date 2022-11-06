@@ -16,7 +16,6 @@
 #'
 #' @examples
 #' query.ensemble.ld.with.snp(rsid="rs3851179", r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR")
-#'
 ensemblQueryLDwithSNP = function(rsid, r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR"){
 
   # load libs
@@ -129,14 +128,12 @@ ensemblQueryLDwithSNPlist = function(rsid.list, r2=0.8, d.prime=0.8, window.size
 #' @export
 #'
 #' @examples
-#'
 #'data.frame(rsid=rep(c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870"), 500)) %>%
 #'    ensemblQueryLDwithLargeSNPdf(in.table=.,
 #'                                 r2=0.8,
 #'                                 d.prime=0.8,
 #'                                 window.size=500,
 #'                                 pop="1000GENOMES:phase_3:EUR")
-#'
 ensemblQueryLDwithLargeSNPdf = function(in.table, r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR"){
 
   # max query length ensembl REST API will accept
