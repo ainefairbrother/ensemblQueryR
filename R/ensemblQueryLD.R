@@ -1,17 +1,34 @@
+#' Function to get list of populations that Ensembl has available to query LD.
+#'
+#' @return data.frame of populations.
+#' @export
+#'
+#' @examples
+#' ensemblQueryGetPops()
+ensemblQueryGetPops = function(){
+
+  #--------------------------------- get pops --------------------------------
+
+  server <- "https://rest.ensembl.org"
+  ext <- "/info/variation/populations/homo_sapiens?filter=LD"
+
+  r <- GET(paste(server, ext, sep = ""), content_type("application/json"))
+
+  jsonlite::fromJSON(jsonlite::toJSON(content(r))) %>%
+    data.frame() %>%
+    return(.)
+
+}
+
 #' Function to query Ensembl LD data with a single rsID
 #'
-#' @param rsid
-#' @param r2
-#' @param d.prime
-#' @param window.size
-#' @param pop
+#' @param rsid String. Variant ID.
+#' @param r2 Float. Measure of LD. If r-squared is provided only return pairs of variants whose r-squared value is equal to or greater than the value provided.
+#' @param d.prime Float. Measure of LD. If D' is provided only return pairs of variants whose D' value is equal to or greater than the value provided.
+#' @param window.size Integer. Window size in kb. The maximum allowed value for the window size is 500 kb. LD is computed for the given variant and all variants that are located within the specified window.
+#' @param pop String. Population for which to compute LD. Use `ensemblQueryGetPops()` to retrieve a list of all populations with LD data.
 #'
-#' @return data.frame with 5 columns:
-#' `query` (original query SNP),
-#' `snp_in_ld` (all SNPs in LD within parameters specified),
-#' `r2` (the r-squared value for query-snp_in_ld),
-#' `d_prime` (the D' value for query-snp_in_ld),
-#' `population_name` (the population LD was calculated from)
+#' @return data.frame with 5 columns.
 #'
 #' @import httr
 #' @import xml2
@@ -38,15 +55,6 @@ ensemblQueryLDwithSNP = function(rsid, r2=0.8, d.prime=0.8, window.size=500, pop
   # require(purrr)
   # require(vroom)
   # require(magrittr)
-
-  #--------------------------------- get pops --------------------------------
-
-  # server <- "https://rest.ensembl.org"
-  # ext <- "/info/variation/populations/homo_sapiens?filter=LD"
-  #
-  # r <- GET(paste(server, ext, sep = ""), content_type("application/json"))
-  #
-  # jsonlite::fromJSON(jsonlite::toJSON(content(r))) %>% data.frame()
 
   #--------------------------------- run query -------------------------------
 
@@ -90,11 +98,11 @@ ensemblQueryLDwithSNP = function(rsid, r2=0.8, d.prime=0.8, window.size=500, pop
 #' Outputs a table containing all SNPs in LD with all query SNPs in rsid.list.
 #' Outputs NA row if no SNPs in LD found.
 #'
-#' @param rsid.list
-#' @param r2
-#' @param d.prime
-#' @param window.size
-#' @param pop
+#' @param rsid.list Character vector of variant IDs.
+#' @param r2 Float. Measure of LD. If r-squared is provided only return pairs of variants whose r-squared value is equal to or greater than the value provided.
+#' @param d.prime Float. Measure of LD. If D' is provided only return pairs of variants whose D' value is equal to or greater than the value provided.
+#' @param window.size Integer. Window size in kb. The maximum allowed value for the window size is 500 kb. LD is computed for the given variant and all variants that are located within the specified window.
+#' @param pop String. Population for which to compute LD. Use `ensemblQueryGetPops()` to retrieve a list of all populations with LD data.
 #'
 #' @return
 #'
@@ -130,11 +138,11 @@ ensemblQueryLDwithSNPlist = function(rsid.list, r2=0.8, d.prime=0.8, window.size
 # final output is a df of all input rsid, with all SNPs in LD with those, with accompanying phenotype labels
 # in.table needs minimum cols: phenotype, rsID
 #'
-#' @param in.table
-#' @param r2
-#' @param d.prime
-#' @param window.size
-#' @param pop
+#' @param in.table data.frame with minimum columns `rsid`.
+#' @param r2 Float. Measure of LD. If r-squared is provided only return pairs of variants whose r-squared value is equal to or greater than the value provided.
+#' @param d.prime Float. Measure of LD. If D' is provided only return pairs of variants whose D' value is equal to or greater than the value provided.
+#' @param window.size Integer. Window size in kb. The maximum allowed value for the window size is 500 kb. LD is computed for the given variant and all variants that are located within the specified window.
+#' @param pop String. Population for which to compute LD. Use `ensemblQueryGetPops()` to retrieve a list of all populations with LD data.
 #'
 #' @return
 #'
