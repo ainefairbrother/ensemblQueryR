@@ -15,7 +15,7 @@
 #' @export
 #'
 #' @examples
-#' query.ensemble.ld.with.snp(rsid="rs3851179", r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR")
+#' ensemblQueryLDwithSNP(rsid="rs3851179", r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR")
 ensemblQueryLDwithSNP = function(rsid, r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR"){
 
   # load libs
@@ -100,11 +100,13 @@ ensemblQueryLDwithSNP = function(rsid, r2=0.8, d.prime=0.8, window.size=500, pop
 #'
 ensemblQueryLDwithSNPlist = function(rsid.list, r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR"){
 
+  library(magrittr)
+
   # max query length ensembl REST API will accept
   max.query.len=1000
 
   if(length(rsid.list)<=max.query.len){
-    lapply(X=rsid.list, FUN=ensemblQueryLDwithSNP, r2=r2, d.prime=d.prime, window.size=window.size, pop=pop) %>%
+    lapply(X=rsid.list, FUN=ensemblQueryR::ensemblQueryLDwithSNP, r2=r2, d.prime=d.prime, window.size=window.size, pop=pop) %>%
       do.call("rbind", .) %>%
       return()
   } else{
@@ -128,6 +130,7 @@ ensemblQueryLDwithSNPlist = function(rsid.list, r2=0.8, d.prime=0.8, window.size
 #' @export
 #'
 #' @examples
+#'require(magrittr)
 #'data.frame(rsid=rep(c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870"), 500)) %>%
 #'    ensemblQueryLDwithLargeSNPdf(in.table=.,
 #'                                 r2=0.8,
@@ -135,6 +138,10 @@ ensemblQueryLDwithSNPlist = function(rsid.list, r2=0.8, d.prime=0.8, window.size
 #'                                 window.size=500,
 #'                                 pop="1000GENOMES:phase_3:EUR")
 ensemblQueryLDwithLargeSNPdf = function(in.table, r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR"){
+
+  library(dplyr)
+  library(magrittr)
+  library(purrr)
 
   # max query length ensembl REST API will accept
   max.query.len=1000
@@ -163,7 +170,7 @@ ensemblQueryLDwithLargeSNPdf = function(in.table, r2=0.8, d.prime=0.8, window.si
 
         out.list[[i]] = in.table[[i]] %>%
           dplyr::pull(rsid) %>%
-          ensemblQueryLDwithSNPlist(rsid.list=., r2=r2, d.prime=d.prime, window.size=window.size, pop=pop)
+          ensemblQueryR::ensemblQueryLDwithSNPlist(rsid.list=., r2=r2, d.prime=d.prime, window.size=window.size, pop=pop)
 
       }
     }
@@ -186,7 +193,7 @@ ensemblQueryLDwithLargeSNPdf = function(in.table, r2=0.8, d.prime=0.8, window.si
 
     in.table %>%
       dplyr::pull(rsid) %>%
-      ensemblQueryLDwithSNPlist(rsid.list=., r2=r2, d.prime=d.prime, window.size=window.size, pop=pop) %>%
+      ensemblQueryR::ensemblQueryLDwithSNPlist(rsid.list=., r2=r2, d.prime=d.prime, window.size=window.size, pop=pop) %>%
       dplyr::mutate(r2 = as.numeric(r2),
                     d_prime = as.numeric(d_prime)) %>%
       tibble::tibble() %>%
