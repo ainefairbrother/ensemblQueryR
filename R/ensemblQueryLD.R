@@ -1,6 +1,9 @@
 #' Function to get list of populations that Ensembl has available to query LD.
 #'
 #' @return data.frame of populations.
+#'
+#' @importFrom magrittr %>%
+#'
 #' @export
 #'
 #' @examples
@@ -36,7 +39,7 @@ ensemblQueryGetPops = function(){
 #' @import dplyr
 #' @import tidyr
 #' @import vroom
-#' @import magrittr
+#' @importFrom magrittr %>%
 #'
 #' @export
 #'
@@ -108,7 +111,7 @@ ensemblQueryLDwithSNP = function(rsid, r2=0.8, d.prime=0.8, window.size=500, pop
 #'
 #' @export
 #'
-#' @import magrittr
+#' @importFrom magrittr %>%
 #'
 #' @examples
 #'
@@ -147,7 +150,7 @@ ensemblQueryLDwithSNPlist = function(rsid.list, r2=0.8, d.prime=0.8, window.size
 #' @return
 #'
 #' @import purrr
-#' @import magrittr
+#' @importFrom magrittr %>%
 #' @import dplyr
 #'
 #' @export

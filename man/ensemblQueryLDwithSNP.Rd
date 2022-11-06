@@ -13,15 +13,18 @@ ensemblQueryLDwithSNP(
 )
 }
 \arguments{
-\item{pop}{}
+\item{rsid}{String. Variant ID.}
+
+\item{r2}{Float. Measure of LD. If r-squared is provided only return pairs of variants whose r-squared value is equal to or greater than the value provided.}
+
+\item{d.prime}{Float. Measure of LD. If D' is provided only return pairs of variants whose D' value is equal to or greater than the value provided.}
+
+\item{window.size}{Integer. Window size in kb. The maximum allowed value for the window size is 500 kb. LD is computed for the given variant and all variants that are located within the specified window.}
+
+\item{pop}{String. Population for which to compute LD. Use `ensemblQueryGetPops()` to retrieve a list of all populations with LD data.}
 }
 \value{
-data.frame with 5 columns:
-`query` (original query SNP),
-`snp_in_ld` (all SNPs in LD within parameters specified),
-`r2` (the r-squared value for query-snp_in_ld),
-`d_prime` (the D' value for query-snp_in_ld),
-`population_name` (the population LD was calculated from)
+data.frame with 5 columns.
 }
 \description{
 Function to query Ensembl LD data with a single rsID
