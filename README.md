@@ -4,7 +4,7 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of ensemblQueryR is to ...
+The goal of ensemblQueryR is to seemlessly integrate querying of Ensembl databases into your R workflow. It does this by formatting and submitting user queries to the Ensembl API. In its current iteration, the package can retreive SNPs in LD with any number of query SNPs. 
 
 ## Installation
 
