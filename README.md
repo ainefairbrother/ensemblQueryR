@@ -16,10 +16,34 @@ remotes::install_github("ainefairbrother/ensemblQueryR")
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
-
 ``` r
 library(ensemblQueryR)
-## basic example code
+library(magrittr)
+
+# for one query SNP: get all SNPs in LD with query SNP
+ensemblQueryLDwithSNP(rsid="rs3851179", 
+                      r2=0.8, 
+                      d.prime=0.8, 
+                      window.size=500, 
+                      pop="1000GENOMES:phase_3:EUR")
+
+# for fewer than 1000 query SNPs: get all SNPs in LD with a list of query SNPs
+ensemblQueryLDwithSNPlist = function(rsid.list, 
+                                     r2=0.8, 
+                                     d.prime=0.8, 
+                                     window.size=500, 
+                                     pop="1000GENOMES:phase_3:EUR")
+
+# for more than 1000 query SNPs: get all SNPs in LD with a data.frame column of query SNPs
+# example input data
+in.table <- data.frame(rsid=rep(c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870"), 500))
+
+# run query on in.table
+ensemblQueryLDwithLargeSNPdf(in.table=in.table,
+                             r2=0.8,
+                             d.prime=0.8,
+                             window.size=500,
+                             pop="1000GENOMES:phase_3:EUR")
+
 ```
 
