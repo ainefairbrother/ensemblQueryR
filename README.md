@@ -32,11 +32,11 @@ ensemblQueryLDwithSNP(rsid="rs3851179",
                       pop="1000GENOMES:phase_3:EUR")
 
 # for fewer than 1000 query SNPs: get all SNPs in LD with a list of query SNPs
-ensemblQueryLDwithSNPlist = function(rsid.list, 
-                                     r2=0.8, 
-                                     d.prime=0.8, 
-                                     window.size=500, 
-                                     pop="1000GENOMES:phase_3:EUR")
+ensemblQueryLDwithSNPlist(rsid.list, 
+                          r2=0.8, 
+                          d.prime=0.8, 
+                          window.size=500, 
+                          pop="1000GENOMES:phase_3:EUR")
 
 # for more than 1000 query SNPs: get all SNPs in LD with a data.frame column of query SNPs
 # example input data
