@@ -31,6 +31,9 @@ ensemblQueryLDwithSNP(rsid="rs3851179",
                       pop="1000GENOMES:phase_3:EUR")
 
 # for fewer than 1000 query SNPs: get all SNPs in LD with a list of query SNPs
+rsid.list = c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870")
+
+# run query on rsid.list
 ensemblQueryLDwithSNPlist(rsid.list, 
                           r2=0.8, 
                           d.prime=0.8, 
