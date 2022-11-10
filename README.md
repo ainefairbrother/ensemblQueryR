@@ -4,7 +4,6 @@
 <!-- badges: start -->
 
 ![GitHub](https://img.shields.io/github/license/ainefairbrother/ensemblQueryR)
-https://img.shields.io/github/last-commit/ainefairbrother/ensemblQueryR
 
 <!-- badges: end -->
 
