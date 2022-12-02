@@ -68,3 +68,6 @@ ensemblQueryR::ensemblQueryLDwithLargeSNPdf(in.table=in.table,
                              pop="1000GENOMES:phase_3:EUR")
 ```
 
+## Disclaimer
+
+Please note that this code is still under development and may contain bugs or errors. It is not recommended for use in production environments. Use at your own risk. I am working on improving the code, addressing any issues, and expanding the package's capabilities so please check back for updates.
