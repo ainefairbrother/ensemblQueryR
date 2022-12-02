@@ -24,12 +24,6 @@ library(ensemblQueryR)
 library(magrittr)
 ```
 
-To get a list of possible human Ensembl populations to use in the `pop` argument, run the `ensemblQueryGetPops()` function. The following examples use the "1000GENOMES:phase_3:EUR" - this is the 1000 genomes European population. 
-
-``` r
-ensemblQueryR::ensemblQueryGetPops()
-```
-
 ``` r
 # get all SNPs in LD with query SNP
 ensemblQueryR::ensemblQueryLDwithSNP(rsid="rs3851179", 
@@ -37,6 +31,12 @@ ensemblQueryR::ensemblQueryLDwithSNP(rsid="rs3851179",
                       d.prime=0.8, 
                       window.size=500, 
                       pop="1000GENOMES:phase_3:EUR")
+```
+
+To get a list of possible human Ensembl populations to use in the `pop` argument, run the `ensemblQueryGetPops()` function. The following examples use the "1000GENOMES:phase_3:EUR" - this is the 1000 genomes European population. 
+
+``` r
+ensemblQueryR::ensemblQueryGetPops()
 ```
 
 ## Example: for <1000 query SNPs
