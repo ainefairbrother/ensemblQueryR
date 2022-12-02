@@ -13,41 +13,58 @@ You can install the development version of ensemblQueryR like so:
 
 ``` r
 remotes::install_github("ainefairbrother/ensemblQueryR")
+
 ```
 
-## Example
+## Example: for one query SNP  
 
 ``` r
+# load libraries
 library(ensemblQueryR)
 library(magrittr)
+```
 
-# for one query SNP: get all SNPs in LD with query SNP
-ensemblQueryLDwithSNP(rsid="rs3851179", 
+To get a list of possible human Ensembl populations to use in the `pop` argument, run the `ensemblQueryGetPops()` function. The following examples use the "1000GENOMES:phase_3:EUR" - this is the 1000 genomes European population. 
+
+``` r
+ensemblQueryR::ensemblQueryGetPops()
+```
+
+``` r
+# get all SNPs in LD with query SNP
+ensemblQueryR::ensemblQueryLDwithSNP(rsid="rs3851179", 
                       r2=0.8, 
                       d.prime=0.8, 
                       window.size=500, 
                       pop="1000GENOMES:phase_3:EUR")
+```
 
-# for fewer than 1000 query SNPs: get all SNPs in LD with a list of query SNPs
+## Example: for <1000 query SNPs
+
+``` r
 rsid.list = c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870")
 
 # run query on rsid.list
-ensemblQueryLDwithSNPlist(rsid.list, 
+ensemblQueryR::ensemblQueryLDwithSNPlist(rsid.list, 
                           r2=0.8, 
                           d.prime=0.8, 
                           window.size=500, 
                           pop="1000GENOMES:phase_3:EUR")
+``` 
 
-# for more than 1000 query SNPs: get all SNPs in LD with a data.frame column of query SNPs
+## Example for >1000 query SNPs
+
+There is a separate function for large queries (>1000 SNPs) because of Ensembl's API query size limit. This function takes a `data.frame` as an input, and gets all SNPs in LD with a column containing query SNPs called `rsid`. 
+
+``` r
 # example input data
 in.table <- data.frame(rsid=rep(c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870"), 500))
 
 # run query on in.table
-ensemblQueryLDwithLargeSNPdf(in.table=in.table,
+ensemblQueryR::ensemblQueryLDwithLargeSNPdf(in.table=in.table,
                              r2=0.8,
                              d.prime=0.8,
                              window.size=500,
                              pop="1000GENOMES:phase_3:EUR")
-
 ```
 
