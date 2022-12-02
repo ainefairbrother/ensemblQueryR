@@ -42,7 +42,7 @@ ensemblQueryR::ensemblQueryLDwithSNP(rsid="rs3851179",
 ## Example: for <1000 query SNPs
 
 ``` r
-rsid.list = c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870")
+rsid.list <- c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870")
 
 # run query on rsid.list
 ensemblQueryR::ensemblQueryLDwithSNPlist(rsid.list, 
