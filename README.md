@@ -33,7 +33,7 @@ ensemblQueryR::ensemblQueryLDwithSNP(rsid="rs3851179",
                       pop="1000GENOMES:phase_3:EUR")
 ```
 
-To get a list of possible human Ensembl populations to use in the `pop` argument, run the `ensemblQueryGetPops()` function. The following examples use the "1000GENOMES:phase_3:EUR" - this is the 1000 genomes European population. 
+To get a list of possible human Ensembl populations to use in the `pop` argument, run the `ensemblQueryGetPops()` function.
 
 ``` r
 ensemblQueryR::ensemblQueryGetPops()
