@@ -17,7 +17,7 @@ ensemblQueryGetPops = function(){
 
   httr::GET("http://cran.r-project.org/Rlogo.jpg")
 
-  r <- GET(paste(server, ext, sep = ""), content_type("application/json"), config = httr::config(connecttimeout = 60))
+  r <- GET(paste(server, ext, sep = ""), content_type("application/json"))
 
   jsonlite::fromJSON(jsonlite::toJSON(content(r))) %>%
     data.frame() %>%
@@ -66,7 +66,7 @@ ensemblQueryLDwithSNP = function(rsid, r2=0.8, d.prime=0.8, window.size=500, pop
   server <- "https://rest.ensembl.org"
   ext <- paste0("/ld/human/",rsid,"/",pop,"?d_prime=",d.prime,";window_size=",window.size,";r2=",r2)
 
-  r <- GET(paste(server, ext, sep = ""), content_type("application/json"), config = httr::config(connecttimeout = 60))
+  r <- httr::GET(url=paste(server, ext, sep = ""), content_type("application/json"))
 
   stop_for_status(r)
 
