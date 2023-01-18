@@ -61,6 +61,12 @@ ensemblQueryLDwithSNP = function(rsid, r2=0.8, d.prime=0.8, window.size=500, pop
   # require(vroom)
   # require(magrittr)
 
+  rsid="rs3851179"
+  r2=0.8
+  d.prime=0.8
+  window.size=500
+  pop="1000GENOMES:phase_3:EUR"
+
   #--------------------------------- run query -------------------------------
 
   server <- "https://rest.ensembl.org"
