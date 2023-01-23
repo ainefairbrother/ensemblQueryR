@@ -49,6 +49,7 @@ ensemblQueryGetPops = function(){
 #' ensemblQueryLDwithSNP(rsid="rs3851179", r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR")
 ensemblQueryLDwithSNP = function(rsid, r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR"){
 
+  # # TEST
   # # load libs
   # require(httr)
   # require(xml2)
@@ -61,11 +62,11 @@ ensemblQueryLDwithSNP = function(rsid, r2=0.8, d.prime=0.8, window.size=500, pop
   # require(vroom)
   # require(magrittr)
   #
-  #   rsid="rs3851179"
-  #   r2=0.8
-  #   d.prime=0.8
-  #   window.size=500
-  #   pop="1000GENOMES:phase_3:EUR"
+  # rsid="rs1210721423"
+  # r2=0.8
+  # d.prime=0.8
+  # window.size=500
+  # pop="1000GENOMES:phase_3:EUR"
 
   #--------------------------------- run query -------------------------------
 
@@ -74,34 +75,52 @@ ensemblQueryLDwithSNP = function(rsid, r2=0.8, d.prime=0.8, window.size=500, pop
 
   r <- httr::GET(url=paste(server, ext, sep = ""), content_type("application/json"))
 
-  stop_for_status(r)
+  # stop_for_status(r)
 
-  # use this if you get a simple nested list back, otherwise inspect its structure
-  res.temp = jsonlite::fromJSON(jsonlite::toJSON(content(r))) %>%
-    data.frame()
+  # error handling, if 400 error, set res.temp as NA
+  if(r$status_code == 400){
+    print("Error 400 thrown by httr::GET")
+    res.temp = NA
+  } else{
+    # if no error, use this if you get a simple nested list back, otherwise inspect its structure
+    res.temp = jsonlite::fromJSON(jsonlite::toJSON(content(r))) %>%
+      data.frame()
+  }
 
   # deal with null search result by testing for df length
   # then returning an empty df if no result
-  if(nrow(res.temp)==0){
-
-    data.frame(rep(NA, 5), row.names = c("variation2", "population_name", "variation1", "d_prime", "r2")) %>%
-      t() %>%
-      `rownames<-`(NULL) %>%
-      as.data.frame() %>%
-      dplyr::rename(query=variation1, snp_in_ld=variation2) %>%
-      dplyr::relocate(query, snp_in_ld, r2, d_prime, population_name) %>%
-      dplyr::mutate(query=rsid) %>%
-      return()
-
+  if(is.data.frame(res.temp)){
+    if(nrow(res.temp)==0){
+      data.frame(rep(NA, 5), row.names = c("variation2", "population_name", "variation1", "d_prime", "r2")) %>%
+        t() %>%
+        `rownames<-`(NULL) %>%
+        as.data.frame() %>%
+        dplyr::rename(query=variation1, snp_in_ld=variation2) %>%
+        dplyr::relocate(query, snp_in_ld, r2, d_prime, population_name) %>%
+        dplyr::mutate(query=rsid) %>%
+        return()
+    } else{
+      # if not 0-row (empty) df, then deal with it normally, format and prepare for return
+      res.temp %>%
+        data.frame() %>%
+        dplyr::arrange(r2) %>%
+        dplyr::rename(query=variation1, snp_in_ld=variation2) %>%
+        dplyr::relocate(query, snp_in_ld, r2, d_prime, population_name) %>%
+        return()
+    }
+    # deal with NA search result (result of 400 error) by testing if res.temp is NA
+    # then returning an empty df of the same structure
   } else{
-
-    res.temp %>%
-      data.frame() %>%
-      dplyr::arrange(r2) %>%
-      dplyr::rename(query=variation1, snp_in_ld=variation2) %>%
-      dplyr::relocate(query, snp_in_ld, r2, d_prime, population_name) %>%
-      return()
-
+    if(is.na(res.temp)){
+      data.frame(rep(NA, 5), row.names = c("variation2", "population_name", "variation1", "d_prime", "r2")) %>%
+        t() %>%
+        `rownames<-`(NULL) %>%
+        as.data.frame() %>%
+        dplyr::rename(query=variation1, snp_in_ld=variation2) %>%
+        dplyr::relocate(query, snp_in_ld, r2, d_prime, population_name) %>%
+        dplyr::mutate(query=rsid) %>%
+        return()
+    }
   }
 }
 
