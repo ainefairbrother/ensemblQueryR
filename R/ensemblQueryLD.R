@@ -75,6 +75,8 @@ ensemblQueryLDwithSNP = function(rsid, r2=0.8, d.prime=0.8, window.size=500, pop
 
   r <- httr::GET(url=paste(server, ext, sep = ""), content_type("application/json"))
 
+  #-------------------- check output and write out ---------------------------
+
   # stop_for_status(r)
 
   # error handling, if 400 error, set res.temp as NA
