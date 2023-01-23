@@ -81,7 +81,7 @@ ensemblQueryLDwithSNP = function(rsid, r2=0.8, d.prime=0.8, window.size=500, pop
 
   # error handling, if 400 error, set res.temp as NA
   if(r$status_code == 400){
-    print("Error 400 thrown by httr::GET")
+    print("Error 400 thrown by httr::GET. This may not be a valid SNP rsID, check using dbSNP: https://www.ncbi.nlm.nih.gov/snp/.")
     res.temp = NA
   } else{
     # if no error, use this if you get a simple nested list back, otherwise inspect its structure
