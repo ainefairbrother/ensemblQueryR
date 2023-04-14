@@ -16,7 +16,7 @@
 #' pop="1000GENOMES:phase_3:EUR"
 #' )
 #'
-ensemblQueryLDwithSNPpair = function(chr, start, end, pop="1000GENOMES:phase_3:EUR"){
+ensemblQueryLDwithSNPregion = function(chr, start, end, pop="1000GENOMES:phase_3:EUR"){
 
   # # TEST
   # # load libs
