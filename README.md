@@ -21,7 +21,7 @@ remotes::install_github("ainefairbrother/ensemblQueryR")
 
 ## Setup 
 
-All functions in this package take the `pop` argument which defines the population for which to compute LD statistics. So, to get a list of options for this argument, run the `ensemblQueryGetPops()` function.
+All functions in this package take the `pop` argument which defines the population for which to retrieve LD statistics. So, to get a list of options for this argument, run the `ensemblQueryGetPops()` function.
 
 ``` r
 # load libraries
@@ -33,7 +33,9 @@ ensemblQueryR::ensemblQueryGetPops()
 
 ## Functionality 1: querying LD for window around one query rsID
 
-For one query rsIDs, get all rsIDs in LD. 
+Example: for 1 query rsID
+
+For one query rsID, get all rsIDs in LD using `ensemblQueryLDwithSNPwindow`
 
 ``` r
 ensemblQueryR::ensemblQueryLDwithSNPwindow(rsid="rs3851179", 
@@ -43,7 +45,7 @@ ensemblQueryR::ensemblQueryLDwithSNPwindow(rsid="rs3851179",
                       pop="1000GENOMES:phase_3:EUR")
 ```
 
-### Example: for <1000 query rsIDs
+Example: for >1 and <1000 query rsIDs
 
 For a vector of query rsIDs, get all rsIDs in LD if your query is <1000 rsIDs in length. This is due to Ensembl's 1000 query limit. See next example for queries >1000 rsIDs in length.
 
@@ -58,7 +60,7 @@ ensemblQueryR::ensemblQueryLDwithSNPwindowList(rsid.vec,
                           pop="1000GENOMES:phase_3:EUR")
 ``` 
 
-### Example for >1000 query rsIDs
+Example: for >1000 query rsIDs
 
 There is a separate function for large queries (>1000 rsIDs) because of Ensembl's API query size limit. This function takes a `data.frame` as an input, and gets all rsIDs in LD with a column containing query rsIDs called `rsid`. 
 
