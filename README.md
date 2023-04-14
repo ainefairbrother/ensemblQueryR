@@ -14,8 +14,9 @@ The goal of ensemblQueryR is to seemlessly integrate querying of Ensembl databas
 You can install the development version of ensemblQueryR like so:
 
 ``` r
-remotes::install_github("ainefairbrother/ensemblQueryR")
+library(remotes)
 
+remotes::install_github("ainefairbrother/ensemblQueryR")
 ```
 
 ## Setup 
