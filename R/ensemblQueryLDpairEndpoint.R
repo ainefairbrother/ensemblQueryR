@@ -1,23 +1,43 @@
-# Computes and returns LD values between the given variants.
-
+#' Function to query Ensembl LD data with a pair of rsIDs.
+#' This function will return r-squared and D' values for the rsID pair.
+#'
+#' @param rsid1 String. Variant ID 1.
+#' @param rsid2 String. Variant ID 2.
+#' @param pop String. Population for which to compute LD. Use `ensemblQueryGetPops()` to retrieve a list of all populations with LD data. Default is 1000GENOMES:phase_3:EUR.
+#'
+#' @return data.frame with 5 columns.
+#'
+#' @import httr
+#' @import xml2
+#' @import jsonlite
+#' @import dplyr
+#' @import tidyr
+#' @import vroom
+#' @importFrom magrittr %>%
+#'
+#' @export
+#'
+#' @examples
+#' ensemblQueryLDwithSNPpair(
+#'   rsid1="rs6792369",
+#'   rsid2="rs1042779",
+#'   pop="1000GENOMES:phase_3:EUR"
+#' )
+#'
 ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"){
 
-  # TEST
-  # load libs
-  require(httr)
-  require(xml2)
-  if( !("tidyverse" %in% (.packages())) ){
-    require(jsonlite)
-  }
-  require(dplyr)
-  require(tidyr)
-  require(purrr)
-  require(vroom)
-  require(magrittr)
-
-  # rsid1="rs6792369"
-  # rsid2="rs1042779"
-  # pop="1000GENOMES:phase_3:EUR"
+  # # TEST
+  # # load libs
+  # require(httr)
+  # require(xml2)
+  # if( !("tidyverse" %in% (.packages())) ){
+  #   require(jsonlite)
+  # }
+  # require(dplyr)
+  # require(tidyr)
+  # require(purrr)
+  # require(vroom)
+  # require(magrittr)
 
   #--------------------------------- run query -------------------------------
 
@@ -44,6 +64,7 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
   # then returning an empty df if no result
   if(is.data.frame(res.temp)){
     if(nrow(res.temp)==0){
+      print(paste0("No data found for variants ", rsid1, " and ", rsid2))
       data.frame(rep(NA, 5), row.names = c("variation1", "variation2", "d_prime", "population_name", "r2")) %>%
         t() %>%
         `rownames<-`(NULL) %>%
@@ -75,68 +96,94 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
   }
 }
 
-test.df = data.frame(rsid1=rep("rs6792369", 10), rsid2=rep("rs1042779", 10))
+#' `ensemblQueryLDwithSNPpairDataframe` applies `ensemblQueryLDwithSNPpair` to a data.frame of rsID pairs
+#'
+#' @param in.table data.frame containing SNP pairs. Columns must include `rsid1` for the first member of the pair and `rsid2` for the second member of the pair.
+#' @param pop String. Population for which to compute LD. Use `ensemblQueryGetPops()` to retrieve a list of all populations with LD data. Default is 1000GENOMES:phase_3:EUR.
+#' @param keep.original.table.row.n Boolean. Set this to TRUE to keep all original rows even if they are NULL in the output (meaning that no data has been found for the rsID pair). Set to FALSE to filter these out and report how many were filtered. Default is FALSE.
+#' @param parallelise Boolean. Set this to TRUE to parallelise and process multiple `in.table` rows simultaneously (recommended for very large input). Default is FALSE
+#' @param n.cores Integer. This is the number of cores to utilise in parallelisation. Only set this if `parallelise` is set to TRUE. Default is 10.
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' ensemblQueryLDwithSNPpairDataframe(in.table=data.frame(rsid1=rep("rs6792369", 10), rsid2=rep("rs1042779", 10)),
+#' pop="1000GENOMES:phase_3:EUR",
+#' keep.original.table.row.n=F,
+#' parallelise=F)
+#'
+ensemblQueryLDwithSNPpairDataframe = function(in.table, pop, keep.original.table.row.n=F, parallelise=F, n.cores=10){
 
-ensemblQueryLDwithLargeSNPdf = function(in.table, r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR"){
+  # # TEST
+  # # load libs
+  # require(httr)
+  # require(xml2)
+  # if( !("tidyverse" %in% (.packages())) ){
+  #   require(jsonlite)
+  # }
+  # require(dplyr)
+  # require(tidyr)
+  # require(purrr)
+  # require(vroom)
+  # require(magrittr)
 
-  # library(dplyr)
-  # library(magrittr)
-  # library(purrr)
+  if( is.data.frame(in.table)==T ){
+    if( (("rsid1" %in% colnames(in.table)) & ("rsid2" %in% colnames(in.table))) ){
 
-  # max query length ensembl REST API will accept
-  max.query.len=1000
+      if(parallelise==F){
 
-  # test for length of query
-  # if query is longer than 999, add id every 500 rows and split into multiple queries
-  if(length(in.table$rsid)>=max.query.len){
+        res = lapply(X=c(1:nrow(in.table)), FUN=function(x){
 
-    print(paste("Query consists of", length(in.table$rsid), "rsid, so splitting query and running in chunks..."))
+          ensemblQueryLDwithSNPpair(rsid1=in.table$rsid1[x],
+                                    rsid2=in.table$rsid2[x],
+                                    pop="1000GENOMES:phase_3:EUR")
 
-    in.table = in.table %>%
-      dplyr::mutate(id = rep(seq(n()), each = 500, length = n())) %>%
-      dplyr::group_by(id) %>%
-      dplyr::group_split()
-
-    # define empty vector to hold query res
-    out.list = vector("list", length(in.table))
-
-    # the queries then have to be run sequentially, not in parallel/or using lapply as the REST API will only handle sequential queries
-    for(i in 1:length(in.table)){
-
-      print(paste("Running query number", i, "of", length(in.table)))
-
-      # run query
-      if( length(in.table[[i]] %>% dplyr::pull(rsid)) <= max.query.len ){
-
-        out.list[[i]] = in.table[[i]] %>%
-          dplyr::pull(rsid) %>%
-          ensemblQueryR::ensemblQueryLDwithSNPwindowList(rsid.list=., r2=r2, d.prime=d.prime, window.size=window.size, pop=pop)
-
+        }) %>%
+          dplyr::bind_rows()
       }
+
+      if(parallelise==T){
+
+        library(parallel)
+
+        res = parallel::mclapply(mc.cores=n.cores, X=c(1:nrow(in.table)), FUN=function(x){
+
+          ensemblQueryLDwithSNPpair(rsid1=in.table$rsid1[x],
+                                    rsid2=in.table$rsid2[x],
+                                    pop="1000GENOMES:phase_3:EUR") %>%
+            return()
+
+        }) %>%
+          dplyr::bind_rows()
+      }
+
+      # either filter null rows, or keep depending on arg - this can clean up rows where no data was found for the snp pair
+      if(keep.original.table.row.n==F){
+        res.original.len = nrow(res)
+
+        res = res %>%
+          tidyr::drop_na()
+
+        res.filtered.len = nrow(res)
+
+        if(res.original.len!=res.filtered.len){
+          n.filtered = res.original.len-res.filtered.len
+          print(paste0(n.filtered, " rows filtered out due to no data for rsID pairs."))
+        }
+
+        return(res)
+
+      } else{
+        return(res)
+      }
+
+    } else{
+      print("Error: object in.table is not data.frame or columns rsid1 and rsid2 do not exist in in.table.")
+      stop()
     }
+  }
+}
 
-    # bind res together and return
-    print("Returning results table... ")
-    out.list %>%
-      lapply(X=., FUN=function(x){x %>% dplyr::mutate_all(as.character)}) %>%
-      purrr::discard(., ~nrow(.) == 0) %>%
-      do.call("rbind", .) %>%
-      dplyr::mutate(r2 = as.numeric(r2),
-                    d_prime = as.numeric(d_prime)) %>%
-      tibble::tibble() %>%
-      return(.)
 
-    # otherwise, run query as usual
-  } else{
-
-    print(paste("Query consists of", length(in.table$rsid), "rsid, so running a single query..."))
-
-    in.table %>%
-      dplyr::pull(rsid) %>%
-      ensemblQueryR::ensemblQueryLDwithSNPwindowList(rsid.list=., r2=r2, d.prime=d.prime, window.size=window.size, pop=pop) %>%
-      dplyr::mutate(r2 = as.numeric(r2),
-                    d_prime = as.numeric(d_prime)) %>%
-      tibble::tibble() %>%
-      return(.)
-  }}
 
