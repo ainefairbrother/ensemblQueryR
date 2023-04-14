@@ -7,7 +7,7 @@
 
 # ensemblQueryR
 
-The goal of ensemblQueryR is to seemlessly integrate querying of Ensembl databases into your R workflow. It does this by formatting and submitting user queries to the Ensembl API. In its current iteration, the package contains functions for the three Ensembl LD 'endpoints': 1. query LD in a window around one SNP, 2. query LD for a pair of query SNPs and 3. query LD for SNPs at a specified genomic locus. 
+The goal of ensemblQueryR is to seemlessly integrate querying of Ensembl databases into your R workflow. It does this by formatting and submitting user queries to the Ensembl API. In its current iteration, the package contains functions for the three Ensembl Linkage Disequilibrium (LD) 'endpoints': 1. Query LD in a window around one SNP, 2. Query LD for a pair of query SNPs and 3. Query LD for SNPs at a specified genomic locus. 
 
 ## Installation
 
