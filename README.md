@@ -70,23 +70,45 @@ There is a separate function for large queries (>1000 rsIDs) because of Ensembl'
 in.table <- data.frame(rsid=rep(c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870"), 500))
 
 # run query on in.table
-ensemblQueryR::ensemblQueryLDwithSNPwindowDataframe(in.table=in.table,
-                             r2=0.8,
-                             d.prime=0.8,
-                             window.size=500,
-                             pop="1000GENOMES:phase_3:EUR")
+ensemblQueryR::ensemblQueryLDwithSNPwindowDataframe(
+  in.table=in.table,
+  r2=0.8,
+  d.prime=0.8,
+  window.size=500,
+  pop="1000GENOMES:phase_3:EUR"
+)
 ```
 
 ## Functionality 2: querying LD for a pair of query SNPs
 
 ``` r
+ensemblQueryLDwithSNPpair(
+  chr="6",
+  start="25837556",
+  end="25843455",
+  pop="1000GENOMES:phase_3:EUR"
+)
 ```
-
-## Functionality 3: querying LD for a genomic window
 
 ``` r
+ensemblQueryLDwithSNPpairDataframe(
+  in.table=data.frame(rsid1=rep("rs6792369", 10), rsid2=rep("rs1042779", 10)),
+  pop="1000GENOMES:phase_3:EUR",
+  keep.original.table.row.n=F,
+  parallelise=F
+)
 ```
 
+## Functionality 3: querying LD for a genomic region
+
+``` r
+ensemblQueryLDwithSNPpair(
+  chr="6",
+  start="25837556",
+  end="25843455",
+  pop="1000GENOMES:phase_3:EUR"
+)
+```
 
 ## Disclaimer
 
