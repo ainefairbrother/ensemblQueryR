@@ -7,7 +7,7 @@
 
 # ensemblQueryR
 
-The goal of ensemblQueryR is to seemlessly integrate querying of Ensembl databases into your R workflow. It does this by formatting and submitting user queries to the Ensembl API. In its current iteration, the package can retreive SNPs in LD with any number of query SNPs. 
+The goal of ensemblQueryR is to seemlessly integrate querying of Ensembl databases into your R workflow. It does this by formatting and submitting user queries to the Ensembl API. In its current iteration, the package contains functions for the three Ensembl LD 'endpoints': 1. query LD in a window around one SNP, 2. query LD for a pair of query SNPs and 3. query LD for SNPs at a specified genomic locus. 
 
 ## Installation
 
@@ -18,57 +18,71 @@ remotes::install_github("ainefairbrother/ensemblQueryR")
 
 ```
 
-## Example: for one query SNP  
+## Setup 
+
+All functions in this package take the `pop` argument which defines the population for which to compute LD statistics. So, to get a list of options for this argument, run the `ensemblQueryGetPops()` function.
 
 ``` r
 # load libraries
 library(ensemblQueryR)
 library(magrittr)
+
+ensemblQueryR::ensemblQueryGetPops()
 ```
 
+## Functionality 1: querying LD for window around one query rsID
+
+For one query rsIDs, get all rsIDs in LD. 
+
 ``` r
-# get all SNPs in LD with query SNP
-ensemblQueryR::ensemblQueryLDwithSNP(rsid="rs3851179", 
+ensemblQueryR::ensemblQueryLDwithSNPwindow(rsid="rs3851179", 
                       r2=0.8, 
                       d.prime=0.8, 
                       window.size=500, 
                       pop="1000GENOMES:phase_3:EUR")
 ```
 
-To get a list of possible human Ensembl populations to use in the `pop` argument, run the `ensemblQueryGetPops()` function.
+### Example: for <1000 query rsIDs
+
+For a vector of query rsIDs, get all rsIDs in LD if your query is <1000 rsIDs in length. This is due to Ensembl's 1000 query limit. See next example for queries >1000 rsIDs in length.
 
 ``` r
-ensemblQueryR::ensemblQueryGetPops()
-```
+rsid.vec <- c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870")
 
-## Example: for <1000 query SNPs
-
-``` r
-rsid.list <- c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870")
-
-# run query on rsid.list
-ensemblQueryR::ensemblQueryLDwithSNPlist(rsid.list, 
+# run query on rsid.vec
+ensemblQueryR::ensemblQueryLDwithSNPwindowList(rsid.vec, 
                           r2=0.8, 
                           d.prime=0.8, 
                           window.size=500, 
                           pop="1000GENOMES:phase_3:EUR")
 ``` 
 
-## Example for >1000 query SNPs
+### Example for >1000 query rsIDs
 
-There is a separate function for large queries (>1000 SNPs) because of Ensembl's API query size limit. This function takes a `data.frame` as an input, and gets all SNPs in LD with a column containing query SNPs called `rsid`. 
+There is a separate function for large queries (>1000 rsIDs) because of Ensembl's API query size limit. This function takes a `data.frame` as an input, and gets all rsIDs in LD with a column containing query rsIDs called `rsid`. 
 
 ``` r
 # example input data
 in.table <- data.frame(rsid=rep(c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870"), 500))
 
 # run query on in.table
-ensemblQueryR::ensemblQueryLDwithLargeSNPdf(in.table=in.table,
+ensemblQueryR::ensemblQueryLDwithSNPwindowDataframe(in.table=in.table,
                              r2=0.8,
                              d.prime=0.8,
                              window.size=500,
                              pop="1000GENOMES:phase_3:EUR")
 ```
+
+## Functionality 2: querying LD for a pair of query SNPs
+
+``` r
+```
+
+## Functionality 3: querying LD for a genomic window
+
+``` r
+```
+
 
 ## Disclaimer
 
