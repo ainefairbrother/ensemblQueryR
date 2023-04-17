@@ -2,6 +2,9 @@
 #'
 #' @return data.frame of populations.
 #'
+#' @import httr
+#' @import xml2
+#' @import jsonlite
 #' @importFrom magrittr %>%
 #'
 #' @export

@@ -6,10 +6,19 @@
 #' @param pop String. Population for which to compute LD. Use `ensemblQueryGetPops()` to retrieve a list of all populations with LD data. Default is 1000GENOMES:phase_3:EUR.
 #'
 #' @return
+#'
+#' @import httr
+#' @import xml2
+#' @import jsonlite
+#' @import dplyr
+#' @import tidyr
+#' @import vroom
+#' @importFrom magrittr %>%
+#'
 #' @export
 #'
 #' @examples
-#' ensemblQueryLDwithSNPpair(
+#' ensemblQueryLDwithSNPregion(
 #' chr="6",
 #' start="25837556",
 #' end="25843455",

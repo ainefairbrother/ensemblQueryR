@@ -14,6 +14,7 @@
 #' @import tidyr
 #' @import vroom
 #' @importFrom magrittr %>%
+#' @import parallel
 #'
 #' @export
 #'
@@ -108,12 +109,13 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
 #' @export
 #'
 #' @examples
-#' ensemblQueryLDwithSNPpairDataframe(in.table=data.frame(rsid1=rep("rs6792369", 10), rsid2=rep("rs1042779", 10)),
+#' ensemblQueryLDwithSNPpairDataframe(
+#' in.table=data.frame(rsid1=rep("rs6792369", 10), rsid2=rep("rs1042779", 10)),
 #' pop="1000GENOMES:phase_3:EUR",
-#' keep.original.table.row.n=F,
-#' parallelise=F)
+#' keep.original.table.row.n=FALSE,
+#' parallelise=FALSE)
 #'
-ensemblQueryLDwithSNPpairDataframe = function(in.table, pop, keep.original.table.row.n=F, parallelise=F, n.cores=10){
+ensemblQueryLDwithSNPpairDataframe = function(in.table, pop, keep.original.table.row.n=FALSE, parallelise=FALSE, n.cores=10){
 
   # # TEST
   # # load libs
@@ -128,10 +130,10 @@ ensemblQueryLDwithSNPpairDataframe = function(in.table, pop, keep.original.table
   # require(vroom)
   # require(magrittr)
 
-  if( is.data.frame(in.table)==T ){
+  if( is.data.frame(in.table)==TRUE ){
     if( (("rsid1" %in% colnames(in.table)) & ("rsid2" %in% colnames(in.table))) ){
 
-      if(parallelise==F){
+      if(parallelise==FALSE){
 
         res = lapply(X=c(1:nrow(in.table)), FUN=function(x){
 
@@ -143,7 +145,7 @@ ensemblQueryLDwithSNPpairDataframe = function(in.table, pop, keep.original.table
           dplyr::bind_rows()
       }
 
-      if(parallelise==T){
+      if(parallelise==TRUE){
 
         library(parallel)
 
@@ -159,7 +161,7 @@ ensemblQueryLDwithSNPpairDataframe = function(in.table, pop, keep.original.table
       }
 
       # either filter null rows, or keep depending on arg - this can clean up rows where no data was found for the snp pair
-      if(keep.original.table.row.n==F){
+      if(keep.original.table.row.n==FALSE){
         res.original.len = nrow(res)
 
         res = res %>%
