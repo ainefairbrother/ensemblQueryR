@@ -102,7 +102,7 @@ ensemblQueryLDwithSNPpairDataframe(
 ## Functionality 3: querying LD for a genomic region
 
 ``` r
-ensemblQueryLDwithSNPpair(
+ensemblQueryLDwithSNPregion(
   chr="6",
   start="25837556",
   end="25843455",
