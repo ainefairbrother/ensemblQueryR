@@ -34,7 +34,7 @@ ensemblQueryR::ensemblQueryGetPops()
 
 ## Functionality 1: querying LD for window around one query rsID
 
-Example: for 1 query rsID
+#### For 1 query rsID
 
 For one query rsID, get all rsIDs in LD using `ensemblQueryLDwithSNPwindow`
 
@@ -46,7 +46,7 @@ ensemblQueryR::ensemblQueryLDwithSNPwindow(rsid="rs3851179",
                       pop="1000GENOMES:phase_3:EUR")
 ```
 
-Example: for >1 and <1000 query rsIDs
+#### For >1 and <1000 query rsIDs
 
 For a vector of query rsIDs, get all rsIDs in LD if your query is <1000 rsIDs in length. This is due to Ensembl's 1000 query limit. See next example for queries >1000 rsIDs in length.
 
@@ -61,7 +61,7 @@ ensemblQueryR::ensemblQueryLDwithSNPwindowList(rsid.vec,
                           pop="1000GENOMES:phase_3:EUR")
 ``` 
 
-Example: for >1000 query rsIDs
+#### For >1000 query rsIDs
 
 There is a separate function for large queries (>1000 rsIDs) because of Ensembl's API query size limit. This function takes a `data.frame` as an input, and gets all rsIDs in LD with a column containing query rsIDs called `rsid`. 
 
