@@ -121,44 +121,45 @@ data.frame(function_tested="ensemblQueryR::ensemblQueryLDwithSNPpairDataframe",
            nrow.outtable=try(nrow(u))[1]) %>%
   vroom::vroom_write(x=., file=paste0("/home/abrowne/projects/ensemblQueryR/benchmarking/results/", "ensemblQueryLDwithSNPpairDataframe", ".", n, ".csv"))
 
-# -- 2c. test ensemblQueryR::ensemblQueryLDwithSNPpairDataframe with parallel --------------------------------------------
+# -- 3. Plot performance --------------------------------------------
 
-# clear env
-rm(list = ls())
-
-start_time = Sys.time()
-
-# set n queries
-n=1000
-
-# load libs
-library(ensemblQueryR)
 library(magrittr)
+library(dplyr)
+library(ggplot2)
+library(ggsci)
 
-t = data.frame(
-  rsid1 = c(rep("rs6792369", n)),
-  rsid2 = c(rep("rs1042779", n))
+#---- Set defaults for ggplots ----
+theme_rhr <- theme_set(
+  theme_bw(base_family = "Helvetica",
+           base_size = 10) +
+    theme(panel.grid.major.x = element_blank(),
+          legend.position = "top",
+          legend.background = element_blank(),
+          panel.spacing = unit(0.1, "lines"))
 )
 
-u = ensemblQueryLDwithSNPpairDataframe(
-  in.table=t,
-  pop="1000GENOMES:phase_3:EUR",
-  keep.original.table.row.n=FALSE,
-  parallelise=TRUE,
-  n.cores=10)
+list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/results", pattern="1000.csv", full.names=T) %>%
+  lapply(X=., FUN=function(x){
+    vroom::vroom(x)
+  }) %>%
+  dplyr::bind_rows() %>%
+  dplyr::mutate(package =
+                  case_when(
+                    grepl("ensemblQueryR", function_tested) ~ "ensemblQueryR",
+                    grepl("LDlinkR", function_tested) ~ "LDlinkR"
+                  ),
+                function_tested=gsub("ensemblQueryR::", "", function_tested),
+                function_tested=gsub("LDlinkR::", "", function_tested)
+  ) %>%
+  ggplot(data=., aes(y=reorder(function_tested, time.min), x=time.min, fill=package)) +
+  geom_col() +
+  xlab("Time taken to run 1000 queries (mins)") +
+  ylab("") +
+  scale_fill_npg() +
+  theme(legend.title = element_blank()) +
+  geom_label(aes(label = round(time.min, 1)), size=2.75, show.legend = FALSE, alpha=0.75)
 
-end_time = Sys.time()
-time_taken = difftime(end_time, start_time, units='mins')
-print(paste("Time taken for ensemblQueryR to process", n,"rsID pairs:", time_taken))
 
-# save results
-data.frame(function_tested="ensemblQueryR::ensemblQueryLDwithSNPpairDataframe",
-           n_queries=n,
-           time.min=time_taken,
-           nrow.outtable=try(nrow(u))[1]) %>%
-  vroom::vroom_write(x=., file=paste0("/home/abrowne/projects/ensemblQueryR/benchmarking/results/", "ensemblQueryLDwithSNPpairDataframe.parallel10", ".", n, ".csv"))
-
-# -- 3. Plot performance --------------------------------------------
 
 
 
