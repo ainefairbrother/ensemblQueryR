@@ -73,6 +73,14 @@ ensemblQueryLDwithSNPwindow = function(rsid, r2=0.8, d.prime=0.8, window.size=50
   # window.size=500
   # pop="1000GENOMES:phase_3:EUR"
 
+  #------------------------------ check inputs -------------------------------
+
+  stopifnot(is.character(rsid))
+  stopifnot(is.character(r2) | is.numeric(r2))
+  stopifnot(is.character(d.prime) | is.numeric(d.prime))
+  stopifnot(is.character(window.size) | is.numeric(window.size))
+  stopifnot(is.character(pop))
+
   #--------------------------------- run query -------------------------------
 
   server <- "https://rest.ensembl.org"
@@ -156,6 +164,16 @@ ensemblQueryLDwithSNPwindow = function(rsid, r2=0.8, d.prime=0.8, window.size=50
 #'
 ensemblQueryLDwithSNPwindowList = function(rsid.list, r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR"){
 
+  #------------------------------ check inputs -------------------------------
+
+  stopifnot(is.list(rsid.list))
+  stopifnot(is.character(r2) | is.numeric(r2))
+  stopifnot(is.character(d.prime) | is.numeric(d.prime))
+  stopifnot(is.character(window.size) | is.numeric(window.size))
+  stopifnot(is.character(pop))
+
+  #------------------------------ main -------------------------------
+
   # max query length ensembl REST API will accept
   max.query.len=1000
 
@@ -201,6 +219,16 @@ ensemblQueryLDwithSNPwindowDataframe = function(in.table, r2=0.8, d.prime=0.8, w
   # library(dplyr)
   # library(magrittr)
   # library(purrr)
+
+  #------------------------------ check inputs -------------------------------
+
+  stopifnot(is.data.frame(in.table))
+  stopifnot(is.character(r2) | is.numeric(r2))
+  stopifnot(is.character(d.prime) | is.numeric(d.prime))
+  stopifnot(is.character(window.size) | is.numeric(window.size))
+  stopifnot(is.character(pop))
+
+  #------------------------------ main -------------------------------
 
   # max query length ensembl REST API will accept
   max.query.len=1000

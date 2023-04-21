@@ -45,6 +45,13 @@ ensemblQueryLDwithSNPregion = function(chr, start, end, pop="1000GENOMES:phase_3
   # end=25843455 #25843455
   # pop="1000GENOMES:phase_3:EUR"
 
+  #------------------------------ check inputs -------------------------------
+
+  stopifnot(is.character(chr) | is.numeric(chr))
+  stopifnot(is.character(start) | is.numeric(start))
+  stopifnot(is.character(end) | is.numeric(end))
+  stopifnot(is.character(pop))
+
   #--------------------------------- run query -------------------------------
 
   server <- "https://rest.ensembl.org"
