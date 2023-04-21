@@ -5,7 +5,7 @@
 rm(list = ls())
 
 # set n queries
-n=10000
+n=1000
 
 start_time = Sys.time()
 
@@ -34,12 +34,17 @@ u = lapply(X=c(1:n),
   dplyr::bind_rows()
 
 end_time = Sys.time()
-time_taken = end_time - start_time
+time_taken = difftime(end_time, start_time, units='mins')
 print(paste("Time taken for LDlinkR to process", n,"rsID pairs:", time_taken))
 
-# 43.39 minutes, then 'Bad Gateway (HTTP 502)' error
+# save results
+data.frame(function_tested="LDlinkR::LDpair",
+           n_queries=n,
+           time.min=time_taken,
+           nrow.outtable=try(nrow(u))[1]) %>%
+  vroom::vroom_write(x=., file=paste0("/home/abrowne/projects/ensemblQueryR/benchmarking/results/", "LDpair", ".", n, ".csv"))
 
-# -- 1a. test ensemblQueryR::ensemblQueryLDwithSNPpair --------------------------------------------
+# -- 2a. test ensemblQueryR::ensemblQueryLDwithSNPpair --------------------------------------------
 
 # clear env
 rm(list = ls())
@@ -47,22 +52,11 @@ rm(list = ls())
 start_time = Sys.time()
 
 # set n queries
-n=10000
+n=1000
 
 # load libs
 library(ensemblQueryR)
 library(magrittr)
-
-# t = data.frame(
-#   rsid1 = c(rep("rs6792369", n)),
-#   rsid2 = c(rep("rs1042779", n))
-# )
-
-# u = ensemblQueryLDwithSNPpairDataframe(
-#   in.table=t,
-#   pop="1000GENOMES:phase_3:EUR",
-#   keep.original.table.row.n=FALSE,
-#   parallelise=FALSE)
 
 t = list(
   c(rep("rs6792369", n)),
@@ -81,12 +75,17 @@ u = lapply(X=c(1:n),
   dplyr::bind_rows()
 
 end_time = Sys.time()
-time_taken = end_time - start_time
+time_taken = difftime(end_time, start_time, units='mins')
 print(paste("Time taken for ensemblQueryR to process", n,"rsID pairs:", time_taken))
 
-# 9.6 minutes, completed successfully
+# save results
+data.frame(function_tested="ensemblQueryR::ensemblQueryLDwithSNPpair",
+           n_queries=n,
+           time.min=time_taken,
+           nrow.outtable=try(nrow(u))[1]) %>%
+  vroom::vroom_write(x=., file=paste0("/home/abrowne/projects/ensemblQueryR/benchmarking/results/", "ensemblQueryLDwithSNPpair", ".", n, ".csv"))
 
-# -- 1b. test ensemblQueryR::ensemblQueryLDwithSNPpairDataframe --------------------------------------------
+# -- 2b. test ensemblQueryR::ensemblQueryLDwithSNPpairDataframe --------------------------------------------
 
 # clear env
 rm(list = ls())
@@ -94,7 +93,7 @@ rm(list = ls())
 start_time = Sys.time()
 
 # set n queries
-n=10000
+n=1000
 
 # load libs
 library(ensemblQueryR)
@@ -112,14 +111,54 @@ u = ensemblQueryLDwithSNPpairDataframe(
   parallelise=FALSE)
 
 end_time = Sys.time()
-time_taken = end_time - start_time
+time_taken = difftime(end_time, start_time, units='mins')
 print(paste("Time taken for ensemblQueryR to process", n,"rsID pairs:", time_taken))
 
+# save results
+data.frame(function_tested="ensemblQueryR::ensemblQueryLDwithSNPpairDataframe",
+           n_queries=n,
+           time.min=time_taken,
+           nrow.outtable=try(nrow(u))[1]) %>%
+  vroom::vroom_write(x=., file=paste0("/home/abrowne/projects/ensemblQueryR/benchmarking/results/", "ensemblQueryLDwithSNPpairDataframe", ".", n, ".csv"))
 
+# -- 2c. test ensemblQueryR::ensemblQueryLDwithSNPpairDataframe with parallel --------------------------------------------
 
+# clear env
+rm(list = ls())
 
+start_time = Sys.time()
 
+# set n queries
+n=1000
 
+# load libs
+library(ensemblQueryR)
+library(magrittr)
+
+t = data.frame(
+  rsid1 = c(rep("rs6792369", n)),
+  rsid2 = c(rep("rs1042779", n))
+)
+
+u = ensemblQueryLDwithSNPpairDataframe(
+  in.table=t,
+  pop="1000GENOMES:phase_3:EUR",
+  keep.original.table.row.n=FALSE,
+  parallelise=TRUE,
+  n.cores=10)
+
+end_time = Sys.time()
+time_taken = difftime(end_time, start_time, units='mins')
+print(paste("Time taken for ensemblQueryR to process", n,"rsID pairs:", time_taken))
+
+# save results
+data.frame(function_tested="ensemblQueryR::ensemblQueryLDwithSNPpairDataframe",
+           n_queries=n,
+           time.min=time_taken,
+           nrow.outtable=try(nrow(u))[1]) %>%
+  vroom::vroom_write(x=., file=paste0("/home/abrowne/projects/ensemblQueryR/benchmarking/results/", "ensemblQueryLDwithSNPpairDataframe.parallel10", ".", n, ".csv"))
+
+# -- 3. Plot performance --------------------------------------------
 
 
 

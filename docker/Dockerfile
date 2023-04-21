@@ -1,7 +1,10 @@
 # add ubuntu 16.04 image to match the OS of the machine on which ensemblQueryR was developed
 FROM ubuntu:16.04
 
-FROM denolehov/curl
+# https://askubuntu.com/questions/1086870/r-script-returns-error-in-libraryhttr-there-is-no-package-called-httr
+RUN apt-get update
+RUN apt-get -y install r-base-core libssl-dev libcurl4-openssl-dev
+RUN apt-get -y install xml2 openssl
 
 # add r-base 4.0.5 image to match the R version on which ensemblQueryR was developed
 FROM r-base:4.0.5
@@ -16,8 +19,8 @@ FROM r-base:4.0.5
 # RUN R -e "install.packages('vroom', dependencies= T)"
 # RUN R -e "install.packages('magrittr', dependencies= T)"
 
-# RUN R -e "install.packages('xml2', dependencies= T)"
-RUN R -e "install.packages('httr', dependencies= T)"
+RUN R -e "install.packages('xml2')"
+RUN R -e "install.packages('httr')"
 
 # load ensemblQueryR dependencies
 RUN R -e "library(httr)"
