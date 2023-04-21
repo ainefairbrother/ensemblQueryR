@@ -1,11 +1,10 @@
-
 # -- 1. test LDlinkR --------------------------------------------
 
 # clear env
 rm(list = ls())
 
 # set n queries
-n=1000
+n=5000
 
 start_time = Sys.time()
 
@@ -52,7 +51,7 @@ rm(list = ls())
 start_time = Sys.time()
 
 # set n queries
-n=1000
+n=5000
 
 # load libs
 library(ensemblQueryR)
@@ -93,7 +92,7 @@ rm(list = ls())
 start_time = Sys.time()
 
 # set n queries
-n=1000
+n=5000
 
 # load libs
 library(ensemblQueryR)
@@ -138,9 +137,11 @@ theme_rhr <- theme_set(
           panel.spacing = unit(0.1, "lines"))
 )
 
-list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/results", pattern="1000.csv", full.names=T) %>%
+speed.plot = list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/results",
+                        pattern=".csv",
+                        full.names=T) %>%
   lapply(X=., FUN=function(x){
-    vroom::vroom(x)
+    vroom::vroom(x, col_types = c(nrow.outtable = "c"))
   }) %>%
   dplyr::bind_rows() %>%
   dplyr::mutate(package =
@@ -149,15 +150,36 @@ list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/results", pattern=
                     grepl("LDlinkR", function_tested) ~ "LDlinkR"
                   ),
                 function_tested=gsub("ensemblQueryR::", "", function_tested),
-                function_tested=gsub("LDlinkR::", "", function_tested)
+                function_tested=gsub("LDlinkR::", "", function_tested),
+                time.min = case_when(
+                  grepl("Error", nrow.outtable) ~ NA_real_,
+                  TRUE ~ time.min),
+                n_queries = paste0(n_queries, " queries")
   ) %>%
   ggplot(data=., aes(y=reorder(function_tested, time.min), x=time.min, fill=package)) +
   geom_col() +
-  xlab("Time taken to run 1000 queries (mins)") +
+  xlab("Time taken to run queries (mins)") +
   ylab("") +
+  xlim(0,50) +
   scale_fill_npg() +
-  theme(legend.title = element_blank()) +
-  geom_label(aes(label = round(time.min, 1)), size=2.75, show.legend = FALSE, alpha=0.75)
+  facet_grid(~n_queries) +
+  theme(legend.title = element_blank(),
+        plot.margin = margin(1,1,1,1, "cm")) +
+  geom_label(aes(label = round(time.min, 1)), size=1.5, show.legend = FALSE, alpha=0.75)
+
+speed.plot %>%
+  ggsave(
+    path="/home/abrowne/projects/ensemblQueryR/img/",
+    filename="01-speed_vs_LDlinkR.png",
+    plot = .,
+    device = "png",
+    scale = 1,
+    width = 6,
+    height = 3,
+    units = c("in"),
+    dpi = 300
+  )
+
 
 
 

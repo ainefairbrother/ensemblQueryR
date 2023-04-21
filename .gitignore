@@ -6,3 +6,4 @@
 ./R/setup.R
 .Rproj
 ./benchmarking/results/*
+./img/*
