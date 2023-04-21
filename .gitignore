@@ -7,3 +7,5 @@
 .Rproj
 ./benchmarking/results/*
 ./img/*
+.Rbuildignore
+ensemblQueryR.Rproj
