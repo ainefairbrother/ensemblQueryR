@@ -39,7 +39,54 @@ print(paste("Time taken for LDlinkR to process", n,"rsID pairs:", time_taken))
 
 # 43.39 minutes, then 'Bad Gateway (HTTP 502)' error
 
-# -- 2. test ensemblQueryR --------------------------------------------
+# -- 1a. test ensemblQueryR::ensemblQueryLDwithSNPpair --------------------------------------------
+
+# clear env
+rm(list = ls())
+
+start_time = Sys.time()
+
+# set n queries
+n=10000
+
+# load libs
+library(ensemblQueryR)
+library(magrittr)
+
+# t = data.frame(
+#   rsid1 = c(rep("rs6792369", n)),
+#   rsid2 = c(rep("rs1042779", n))
+# )
+
+# u = ensemblQueryLDwithSNPpairDataframe(
+#   in.table=t,
+#   pop="1000GENOMES:phase_3:EUR",
+#   keep.original.table.row.n=FALSE,
+#   parallelise=FALSE)
+
+t = list(
+  c(rep("rs6792369", n)),
+  c(rep("rs1042779", n))
+)
+
+u = lapply(X=c(1:n),
+           FUN=function(x){
+             ensemblQueryLDwithSNPpair(
+               rsid1=t[[1]][x],
+               rsid2=t[[2]][x],
+               pop="1000GENOMES:phase_3:EUR"
+             ) %>%
+               return()
+           }) %>%
+  dplyr::bind_rows()
+
+end_time = Sys.time()
+time_taken = end_time - start_time
+print(paste("Time taken for ensemblQueryR to process", n,"rsID pairs:", time_taken))
+
+# 9.6 minutes, completed successfully
+
+# -- 1b. test ensemblQueryR::ensemblQueryLDwithSNPpairDataframe --------------------------------------------
 
 # clear env
 rm(list = ls())
@@ -67,9 +114,6 @@ u = ensemblQueryLDwithSNPpairDataframe(
 end_time = Sys.time()
 time_taken = end_time - start_time
 print(paste("Time taken for ensemblQueryR to process", n,"rsID pairs:", time_taken))
-
-# 9.6 minutes, completed successfully
-
 
 
 

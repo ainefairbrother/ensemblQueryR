@@ -53,7 +53,7 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
 
   # error handling, if 400 error, set res.temp as NA
   if(r$status_code == 400){
-    print("Error 400 thrown by httr::GET. This may not be a valid SNP rsID, check using dbSNP: https://www.ncbi.nlm.nih.gov/snp/.")
+    print(paste0("Error 400 thrown by httr::GET. One or both of rsid1 (",rsid1,") or rsid2 (", rsid2,")", " may not be a valid SNP rsID, check using dbSNP: https://www.ncbi.nlm.nih.gov/snp/."))
     res.temp = NA
   } else{
     # if no error, use this if you get a simple nested list back, otherwise inspect its structure

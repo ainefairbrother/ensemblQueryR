@@ -1,12 +1,10 @@
 # add ubuntu 16.04 image to match the OS of the machine on which ensemblQueryR was developed
 FROM ubuntu:16.04
 
+FROM denolehov/curl
+
 # add r-base 4.0.5 image to match the R version on which ensemblQueryR was developed
 FROM r-base:4.0.5
-
-# install libcurl within R, so that R can find it as per https://stackoverflow.com/questions/42115972/configuration-failed-because-libcurl-was-not-found
-RUN apt-get update
-RUN apt-get -s install libcurl4-openssl-dev
 
 # install ensemblQueryR dependencies at specific versions used in development
 # RUN R -e "install.packages('devtools', dependencies= T)"
@@ -18,9 +16,7 @@ RUN apt-get -s install libcurl4-openssl-dev
 # RUN R -e "install.packages('vroom', dependencies= T)"
 # RUN R -e "install.packages('magrittr', dependencies= T)"
 
-
-
-RUN R -e "install.packages('xml2', dependencies= T)"
+# RUN R -e "install.packages('xml2', dependencies= T)"
 RUN R -e "install.packages('httr', dependencies= T)"
 
 # load ensemblQueryR dependencies
