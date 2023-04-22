@@ -7,7 +7,7 @@
 
 # ensemblQueryR
 
-The goal of ensemblQueryR is to seemlessly integrate querying of Ensembl databases into your R workflow. It does this by formatting and submitting user queries to the Ensembl API. In its current iteration, the package contains functions for the three Ensembl Linkage Disequilibrium (LD) 'endpoints': 1. Query LD in a window around one SNP, 2. Query LD for a pair of query SNPs and 3. Query LD for SNPs at a specified genomic locus. 
+The goal of ensemblQueryR is to seemlessly integrate querying of Ensembl databases into your R workflow. It does this by formatting and submitting user queries to the Ensembl API. At present, the package contains functions for the three Ensembl Linkage Disequilibrium (LD) 'endpoints': 1. Query LD in a window around one SNP, 2. Query LD for a pair of query SNPs and 3. Query LD for SNPs at a specified genomic locus. 
 
 ## Installation
 
@@ -63,7 +63,7 @@ ensemblQueryR::ensemblQueryLDwithSNPwindowList(rsid.vec,
 
 #### For >1000 query rsIDs
 
-There is a separate function for large queries (>1000 rsIDs) because of Ensembl's API query size limit. This function takes a `data.frame` as an input, and gets all rsIDs in LD with a column containing query rsIDs called `rsid`. 
+There is a separate function for large queries (>1000 rsIDs) because of Ensembl's API query size limit. This function takes a `data.frame` as an input, and gets all rsIDs in LD with a column of query rsIDs called `rsid`. 
 
 ``` r
 # example input data
@@ -81,14 +81,17 @@ ensemblQueryR::ensemblQueryLDwithSNPwindowDataframe(
 
 ## Functionality 2: querying LD for a pair of query SNPs
 
+The `ensemblQueryLDwithSNPpair` takes a single pair of query SNPs and provides a `data.frame` of LD statistics for these. 
+
 ``` r
 ensemblQueryLDwithSNPpair(
-  chr="6",
-  start="25837556",
-  end="25843455",
+  rsid1="rs6792369",
+  rsid2="rs1042779",
   pop="1000GENOMES:phase_3:EUR"
 )
 ```
+
+The `ensemblQueryLDwithSNPpairDataframe` takes a `data.frame` with columns named `rsid1` and `rsid2` containing many pairs of query SNPs and provides a `data.frame` of LD statistics for these. 
 
 ``` r
 ensemblQueryLDwithSNPpairDataframe(
@@ -100,6 +103,8 @@ ensemblQueryLDwithSNPpairDataframe(
 ```
 
 ## Functionality 3: querying LD for a genomic region
+
+The `ensemblQueryLDwithSNPregion` function takes a genomic region as input and returns all SNP pairs and their LD statistics within the defined region.
 
 ``` r
 ensemblQueryLDwithSNPregion(

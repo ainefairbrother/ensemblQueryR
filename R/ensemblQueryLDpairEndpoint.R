@@ -13,8 +13,7 @@
 #' @import dplyr
 #' @import tidyr
 #' @import vroom
-#' @importFrom magrittr %>%
-#' @import parallel
+#' @importFrom magrittr %>%å
 #'
 #' @export
 #'
@@ -108,8 +107,6 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
 #' @param in.table data.frame containing SNP pairs. Columns must include `rsid1` for the first member of the pair and `rsid2` for the second member of the pair.
 #' @param pop String. Population for which to compute LD. Use `ensemblQueryGetPops()` to retrieve a list of all populations with LD data. Default is 1000GENOMES:phase_3:EUR.
 #' @param keep.original.table.row.n Boolean. Set this to TRUE to keep all original rows even if they are NULL in the output (meaning that no data has been found for the rsID pair). Set to FALSE to filter these out and report how many were filtered. Default is FALSE.
-#' @param parallelise Boolean. Set this to TRUE to parallelise and process multiple `in.table` rows simultaneously (recommended for very large input). Default is FALSE
-#' @param n.cores Integer. This is the number of cores to utilise in parallelisation. Only set this if `parallelise` is set to TRUE. Default is 10.
 #'
 #' @return
 #' @export
@@ -118,10 +115,9 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
 #' ensemblQueryLDwithSNPpairDataframe(
 #' in.table=data.frame(rsid1=rep("rs6792369", 10), rsid2=rep("rs1042779", 10)),
 #' pop="1000GENOMES:phase_3:EUR",
-#' keep.original.table.row.n=FALSE,
-#' parallelise=FALSE)
+#' keep.original.table.row.n=FALSE)
 #'
-ensemblQueryLDwithSNPpairDataframe = function(in.table, pop="1000GENOMES:phase_3:EUR", keep.original.table.row.n=FALSE){ # parallelise=FALSE, n.cores=10
+ensemblQueryLDwithSNPpairDataframe = function(in.table, pop="1000GENOMES:phase_3:EUR", keep.original.table.row.n=FALSE){
 
   # # TEST
   # # load libs
@@ -141,40 +137,20 @@ ensemblQueryLDwithSNPpairDataframe = function(in.table, pop="1000GENOMES:phase_3
   stopifnot(is.data.frame(in.table))
   stopifnot(is.character(pop))
   stopifnot(is.logical(keep.original.table.row.n))
-  stopifnot(is.logical(parallelise))
-  stopifnot(is.numeric(n.cores))
 
   #--------------------------------- main ------------------------------------
 
   if( is.data.frame(in.table)==TRUE ){
     if( (("rsid1" %in% colnames(in.table)) & ("rsid2" %in% colnames(in.table))) ){
 
-      if(parallelise==FALSE){
+      res = lapply(X=c(1:nrow(in.table)), FUN=function(x){
 
-        res = lapply(X=c(1:nrow(in.table)), FUN=function(x){
+        ensemblQueryLDwithSNPpair(rsid1=in.table$rsid1[x],
+                                  rsid2=in.table$rsid2[x],
+                                  pop=pop)
 
-          ensemblQueryLDwithSNPpair(rsid1=in.table$rsid1[x],
-                                    rsid2=in.table$rsid2[x],
-                                    pop=pop)
-
-        }) %>%
-          dplyr::bind_rows()
-      }
-
-      # if(parallelise==TRUE){
-      #
-      #   library(parallel)
-      #
-      #   res = parallel::mclapply(mc.cores=n.cores, X=c(1:nrow(in.table)), FUN=function(x){
-      #
-      #     ensemblQueryLDwithSNPpair(rsid1=in.table$rsid1[x],
-      #                               rsid2=in.table$rsid2[x],
-      #                               pop=pop) %>%
-      #       return()
-      #
-      #   }) %>%
-      #     dplyr::bind_rows()
-      # }
+      }) %>%
+        dplyr::bind_rows()
 
       # either filter null rows, or keep depending on arg - this can clean up rows where no data was found for the snp pair
       if(keep.original.table.row.n==FALSE){
@@ -197,9 +173,12 @@ ensemblQueryLDwithSNPpairDataframe = function(in.table, pop="1000GENOMES:phase_3
       }
 
     } else{
-      print("Error: object in.table is not data.frame or columns rsid1 and rsid2 do not exist in in.table.")
+      print("Error: columns rsid1 and rsid2 do not exist in in.table.")
       stop()
     }
+  } else{
+    print("Error: in.table is not a data.frame.")
+    stop()
   }
 }
 
