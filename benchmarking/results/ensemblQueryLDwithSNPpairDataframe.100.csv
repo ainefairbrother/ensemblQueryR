@@ -1,0 +1,3 @@
+function_tested	n_queries	time.min	nrow.outtable
+ensemblQueryR::ensemblQueryLDwithSNPpairDataframe	100	0.000148757298787435	"Error in nrow(u) : object 'u' not found
+"

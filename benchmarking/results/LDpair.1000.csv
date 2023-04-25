@@ -1,0 +1,2 @@
+function_tested	n_queries	time.min	nrow.outtable
+LDlinkR::LDpair	1000	43.3572506308556	996

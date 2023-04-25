@@ -4,7 +4,7 @@
 rm(list = ls())
 
 # set n queries
-n=5000
+n=100
 
 start_time = Sys.time()
 
@@ -51,7 +51,7 @@ rm(list = ls())
 start_time = Sys.time()
 
 # set n queries
-n=5000
+n=100
 
 # load libs
 library(ensemblQueryR)
@@ -92,7 +92,7 @@ rm(list = ls())
 start_time = Sys.time()
 
 # set n queries
-n=5000
+n=100
 
 # load libs
 library(ensemblQueryR)
@@ -106,8 +106,7 @@ t = data.frame(
 u = ensemblQueryLDwithSNPpairDataframe(
   in.table=t,
   pop="1000GENOMES:phase_3:EUR",
-  keep.original.table.row.n=FALSE,
-  parallelise=FALSE)
+  keep.original.table.row.n=FALSE)
 
 end_time = Sys.time()
 time_taken = difftime(end_time, start_time, units='mins')
