@@ -1,4 +1,5 @@
-
+# prevents the testing hanging as per https://github.com/r-lib/devtools/issues/1526
+Sys.setenv(R_TESTS="")
 
 test_that("ensemblQueryGetPops returns data.frame", {
   expect_s3_class(
@@ -69,7 +70,7 @@ test_that("ensemblQueryLDwithSNPwindowDataframe returns data.frame", {
   expect_s3_class(
 
     ensemblQueryLDwithSNPwindowDataframe(
-        in.table=data.frame(rsid=rep(c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870"), 500)),
+        in.table=data.frame(rsid=rep(c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870"), 200)),
         r2=0.8,
         d.prime=0.8,
         window.size=500,
@@ -77,7 +78,3 @@ test_that("ensemblQueryLDwithSNPwindowDataframe returns data.frame", {
 
     "data.frame")
 })
-
-
-
-

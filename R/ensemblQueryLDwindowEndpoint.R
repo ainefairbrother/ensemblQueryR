@@ -25,7 +25,7 @@ ensemblQueryGetPops = function(){
 
   jsonlite::fromJSON(jsonlite::toJSON(content(r))) %>%
     data.frame() %>%
-    return(.)
+    return()
 
 }
 
@@ -166,7 +166,7 @@ ensemblQueryLDwithSNPwindowList = function(rsid.list, r2=0.8, d.prime=0.8, windo
 
   #------------------------------ check inputs -------------------------------
 
-  stopifnot(is.list(rsid.list))
+  stopifnot(is.vector(rsid.list) | is.list(rsid.list))
   stopifnot(is.character(r2) | is.numeric(r2))
   stopifnot(is.character(d.prime) | is.numeric(d.prime))
   stopifnot(is.character(window.size) | is.numeric(window.size))
@@ -270,7 +270,7 @@ ensemblQueryLDwithSNPwindowDataframe = function(in.table, r2=0.8, d.prime=0.8, w
       do.call("rbind", .) %>%
       dplyr::mutate(r2 = as.numeric(r2),
                     d_prime = as.numeric(d_prime)) %>%
-      tibble::tibble() %>%
+      as.data.frame() %>%
       return(.)
 
     # otherwise, run query as usual
@@ -283,6 +283,6 @@ ensemblQueryLDwithSNPwindowDataframe = function(in.table, r2=0.8, d.prime=0.8, w
       ensemblQueryR::ensemblQueryLDwithSNPwindowList(rsid.list=., r2=r2, d.prime=d.prime, window.size=window.size, pop=pop) %>%
       dplyr::mutate(r2 = as.numeric(r2),
                     d_prime = as.numeric(d_prime)) %>%
-      tibble::tibble() %>%
+      as.data.frame() %>%
       return(.)
   }}

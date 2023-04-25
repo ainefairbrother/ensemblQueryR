@@ -6,10 +6,8 @@
 \usage{
 ensemblQueryLDwithSNPpairDataframe(
   in.table,
-  pop,
-  keep.original.table.row.n = FALSE,
-  parallelise = FALSE,
-  n.cores = 10
+  pop = "1000GENOMES:phase_3:EUR",
+  keep.original.table.row.n = FALSE
 )
 }
 \arguments{
@@ -18,10 +16,6 @@ ensemblQueryLDwithSNPpairDataframe(
 \item{pop}{String. Population for which to compute LD. Use `ensemblQueryGetPops()` to retrieve a list of all populations with LD data. Default is 1000GENOMES:phase_3:EUR.}
 
 \item{keep.original.table.row.n}{Boolean. Set this to TRUE to keep all original rows even if they are NULL in the output (meaning that no data has been found for the rsID pair). Set to FALSE to filter these out and report how many were filtered. Default is FALSE.}
-
-\item{parallelise}{Boolean. Set this to TRUE to parallelise and process multiple `in.table` rows simultaneously (recommended for very large input). Default is FALSE}
-
-\item{n.cores}{Integer. This is the number of cores to utilise in parallelisation. Only set this if `parallelise` is set to TRUE. Default is 10.}
 }
 \description{
 `ensemblQueryLDwithSNPpairDataframe` applies `ensemblQueryLDwithSNPpair` to a data.frame of rsID pairs
@@ -30,7 +24,6 @@ ensemblQueryLDwithSNPpairDataframe(
 ensemblQueryLDwithSNPpairDataframe(
 in.table=data.frame(rsid1=rep("rs6792369", 10), rsid2=rep("rs1042779", 10)),
 pop="1000GENOMES:phase_3:EUR",
-keep.original.table.row.n=FALSE,
-parallelise=FALSE)
+keep.original.table.row.n=FALSE)
 
 }

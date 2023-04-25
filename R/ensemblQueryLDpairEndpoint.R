@@ -13,7 +13,7 @@
 #' @import dplyr
 #' @import tidyr
 #' @import vroom
-#' @importFrom magrittr %>%å
+#' @importFrom magrittr %>%
 #'
 #' @export
 #'

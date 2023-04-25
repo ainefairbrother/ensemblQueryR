@@ -1,3 +1,5 @@
+# prevents the testing hanging as per https://github.com/r-lib/devtools/issues/1526
+Sys.setenv(R_TESTS="")
 
 test_that("ensemblQueryLDwithSNPregion returns data.frame", {
   expect_s3_class(
