@@ -4,7 +4,7 @@
 rm(list = ls())
 
 # set n queries
-n=100
+n=10000
 
 start_time = Sys.time()
 
@@ -51,7 +51,7 @@ rm(list = ls())
 start_time = Sys.time()
 
 # set n queries
-n=100
+n=10000
 
 # load libs
 library(ensemblQueryR)
@@ -92,7 +92,7 @@ rm(list = ls())
 start_time = Sys.time()
 
 # set n queries
-n=100
+n=10000
 
 # load libs
 library(ensemblQueryR)
@@ -155,16 +155,19 @@ speed.plot = list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/resul
                   TRUE ~ time.min),
                 n_queries = paste0(n_queries, " queries")
   ) %>%
+  dplyr::mutate(n_queries = factor(n_queries, levels=c("100 queries", "1000 queries", "5000 queries", "10000 queries"))) %>%
+
   ggplot(data=., aes(y=reorder(function_tested, time.min), x=time.min, fill=package)) +
   geom_col() +
-  xlab("Time taken to run queries (mins)") +
+  xlab("Time taken (mins)") +
   ylab("") +
-  xlim(0,50) +
+  xlim(0,55) +
   scale_fill_npg() +
   facet_grid(~n_queries) +
   theme(legend.title = element_blank(),
         plot.margin = margin(1,1,1,1, "cm")) +
-  geom_label(aes(label = round(time.min, 1)), size=1.5, show.legend = FALSE, alpha=0.75)
+  geom_text(aes(label = round(time.min, 1)), size=2, show.legend = FALSE, alpha=0.75, hjust=0)
+speed.plot
 
 speed.plot %>%
   ggsave(
@@ -173,13 +176,11 @@ speed.plot %>%
     plot = .,
     device = "png",
     scale = 1,
-    width = 6,
-    height = 3,
+    width = 6.5,
+    height = 2.5,
     units = c("in"),
     dpi = 300
   )
-
-
 
 
 

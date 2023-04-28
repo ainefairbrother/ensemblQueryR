@@ -10,4 +10,4 @@
 .Rbuildignore
 ensemblQueryR.Rproj
 .RData
-
+/img

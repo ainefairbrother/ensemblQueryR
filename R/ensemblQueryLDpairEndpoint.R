@@ -52,9 +52,9 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
 
   r <- httr::GET(url=paste(server, ext, sep = ""), content_type("application/json"))
 
-  #-------------------- check output and write out ---------------------------
+  stop_for_status(r)
 
-  # stop_for_status(r)
+  #-------------------- check output and write out ---------------------------
 
   # error handling, if 400 error, set res.temp as NA
   if(r$status_code == 400){

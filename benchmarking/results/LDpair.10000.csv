@@ -1,0 +1,3 @@
+function_tested	n_queries	time.min	nrow.outtable
+LDlinkR::LDpair	10000	5.04774884780248	"Error in nrow(u) : object 'u' not found
+"

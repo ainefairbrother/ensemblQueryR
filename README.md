@@ -46,22 +46,7 @@ ensemblQueryR::ensemblQueryLDwithSNPwindow(rsid="rs3851179",
                       pop="1000GENOMES:phase_3:EUR")
 ```
 
-#### For >1 and <1000 query rsIDs
-
-For a vector of query rsIDs, get all rsIDs in LD if your query is <1000 rsIDs in length. This is due to Ensembl's 1000 query limit. See next example for queries >1000 rsIDs in length.
-
-``` r
-rsid.vec <- c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870")
-
-# run query on rsid.vec
-ensemblQueryR::ensemblQueryLDwithSNPwindowList(rsid.vec, 
-                          r2=0.8, 
-                          d.prime=0.8, 
-                          window.size=500, 
-                          pop="1000GENOMES:phase_3:EUR")
-``` 
-
-#### For >1000 query rsIDs
+#### For >1 query rsIDs
 
 There is a separate function for large queries (>1000 rsIDs) because of Ensembl's API query size limit. This function takes a `data.frame` as an input, and gets all rsIDs in LD with a column of query rsIDs called `rsid`. 
 
