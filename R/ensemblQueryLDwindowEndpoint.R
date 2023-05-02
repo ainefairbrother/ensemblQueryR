@@ -110,150 +110,123 @@ ensemblQueryLDwithSNPwindow = function(rsid, r2=0.8, d.prime=0.8, window.size=50
   }
 }
 
-#' Function to apply `ensemblQueryLDwithSNPwindow` to a list of SNPs of length<1000
-#' Outputs a table containing all SNPs in LD with all query SNPs in rsid.list.
-#' Outputs NA row if no SNPs in LD found.
+
+#' Title
 #'
-#' @param rsid.list Character vector of variant IDs.
-#' @param r2 Float. Measure of LD. If r-squared is provided only return pairs of variants whose r-squared value is equal to or greater than the value provided.
-#' @param d.prime Float. Measure of LD. If D' is provided only return pairs of variants whose D' value is equal to or greater than the value provided.
-#' @param window.size Integer. Window size in kb. The maximum allowed value for the window size is 500 kb. LD is computed for the given variant and all variants that are located within the specified window.
-#' @param pop String. Population for which to compute LD. Use `ensemblQueryGetPops()` to retrieve a list of all populations with LD data. Default is 1000GENOMES:phase_3:EUR.
+#' @param in.table
+#' @param r2
+#' @param d.prime
+#' @param window.size
+#' @param pop
+#' @param cores
 #'
 #' @return
-#'
-#' @export
-#'
-#' @importFrom magrittr %>%
-#'
-#' @examples
-#' ensemblQueryLDwithSNPwindowList(rsid.list=c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870"),
-#'                           r2=0.8,
-#'                           d.prime=0.8,
-#'                           window.size=500,
-#'                           pop="1000GENOMES:phase_3:EUR")
-#'
-ensemblQueryLDwithSNPwindowList = function(rsid.list, r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR"){
-
-  #------------------------------ check inputs -------------------------------
-
-  stopifnot(is.vector(rsid.list) | is.list(rsid.list))
-  stopifnot(is.character(r2) | is.numeric(r2))
-  stopifnot(is.character(d.prime) | is.numeric(d.prime))
-  stopifnot(is.character(window.size) | is.numeric(window.size))
-  stopifnot(is.character(pop))
-
-  #------------------------------ main -------------------------------
-
-  # max query length ensembl REST API will accept
-  max.query.len=1000
-
-  if(length(rsid.list)<=max.query.len){
-    lapply(X=rsid.list, FUN=ensemblQueryR::ensemblQueryLDwithSNPwindow, r2=r2, d.prime=d.prime, window.size=window.size, pop=pop) %>%
-      do.call("rbind", .) %>%
-      return()
-  } else{
-    print(paste("Query length=", length(rsid.list), "which is longer than the max. query length ensembl REST API accepts. Please use ensemblQueryLDwithLargeSNPdf() instead."))
-  }
-
-}
-
-# employs ensemblQueryLDwithSNPwindowList to make this work with an entire results dataframe,
-# splits a df by phenotype, queries each one (splitting if rsid lists are >1000), then returns a df for each phenotype
-# final output is a df of all input rsid, with all SNPs in LD with those, with accompanying phenotype labels
-# in.table needs minimum cols: phenotype, rsID
-#'
-#' @param in.table data.frame with minimum columns `rsid`.
-#' @param r2 Float. Measure of LD. If r-squared is provided only return pairs of variants whose r-squared value is equal to or greater than the value provided.
-#' @param d.prime Float. Measure of LD. If D' is provided only return pairs of variants whose D' value is equal to or greater than the value provided.
-#' @param window.size Integer. Window size in kb. The maximum allowed value for the window size is 500 kb. LD is computed for the given variant and all variants that are located within the specified window.
-#' @param pop String. Population for which to compute LD. Use `ensemblQueryGetPops()` to retrieve a list of all populations with LD data. Default is 1000GENOMES:phase_3:EUR.
-#'
-#' @return
-#'
-#' @import purrr
-#' @importFrom magrittr %>%
-#' @import dplyr
-#'
 #' @export
 #'
 #' @examples
-#'require(magrittr)
-#'data.frame(rsid=rep(c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870"), 500)) %>%
-#'    ensemblQueryLDwithSNPwindowDataframe(in.table=.,
-#'                                 r2=0.8,
-#'                                 d.prime=0.8,
-#'                                 window.size=500,
-#'                                 pop="1000GENOMES:phase_3:EUR")
-ensemblQueryLDwithSNPwindowDataframe = function(in.table, r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR"){
+#'
+#' library(magrittr)
+#' data.frame(rsid=rep(c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870"), 100)) %>%
+#'     ensemblQueryLDwithSNPwindowDataframe(in.table=.,
+#'                                          r2=0.8,
+#'                                          d.prime=0.8,
+#'                                          window.size=500,
+#'                                          pop="1000GENOMES:phase_3:EUR",
+#'                                          cores=10)
+#'
+ensemblQueryLDwithSNPwindowDataframe = function(in.table, r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR", cores=1){
 
-  # library(dplyr)
-  # library(magrittr)
-  # library(purrr)
 
   #------------------------------ check inputs -------------------------------
 
   stopifnot(is.data.frame(in.table))
-  stopifnot(is.character(r2) | is.numeric(r2))
-  stopifnot(is.character(d.prime) | is.numeric(d.prime))
-  stopifnot(is.character(window.size) | is.numeric(window.size))
+  stopifnot(is.numeric(r2) | is.character(r2))
+  stopifnot(is.numeric(d.prime) | is.character(d.prime))
+  stopifnot(is.numeric(window.size) | is.character(window.size))
   stopifnot(is.character(pop))
+  stopifnot(is.logical(keep.original.table.row.n))
+  stopifnot(is.numeric(cores))
 
-  #------------------------------ main -------------------------------
+  # check that the cores arg is set above 0 but not above the max. available
+  # cores.available = parallel::detectCores()
+  stopifnot("Cores must be a value between 0 and 10"= (cores>0) & (cores<=10))
 
-  # max query length ensembl REST API will accept
-  max.query.len=1000
+  #--------------------------------- main ------------------------------------
 
-  # test for length of query
-  # if query is longer than 999, add id every 500 rows and split into multiple queries
-  if(length(in.table$rsid)>=max.query.len){
+  if( is.data.frame(in.table)==TRUE ){
+    if( ("rsid" %in% colnames(in.table)) ){
 
-    print(paste("Query consists of", length(in.table$rsid), "rsid, so splitting query and running in chunks..."))
-
-    in.table = in.table %>%
-      dplyr::mutate(id = rep(seq(n()), each = 500, length = n())) %>%
-      dplyr::group_by(id) %>%
-      dplyr::group_split()
-
-    # define empty vector to hold query res
-    out.list = vector("list", length(in.table))
-
-    # the queries then have to be run sequentially, not in parallel/or using lapply as the REST API will only handle sequential queries
-    for(i in 1:length(in.table)){
-
-      print(paste("Running query number", i, "of", length(in.table)))
-
-      # run query
-      if( length(in.table[[i]] %>% dplyr::pull(rsid)) <= max.query.len ){
-
-        out.list[[i]] = in.table[[i]] %>%
-          dplyr::pull(rsid) %>%
-          ensemblQueryR::ensemblQueryLDwithSNPwindowList(rsid.list=., r2=r2, d.prime=d.prime, window.size=window.size, pop=pop)
-
+      # if user has left as default i.e. 1 core, don't parallelise
+      if(cores==1){
+        res = lapply(X=c(1:nrow(in.table)), FUN=function(x){
+          ensemblQueryLDwithSNPwindow(rsid=in.table$rsid[x],
+                                      r2=r2,
+                                      d.prime=d.prime,
+                                      window.size=window.size,
+                                      pop=pop)
+        }) %>%
+          dplyr::bind_rows() %>%
+          return(.)
       }
+
+      # else if cores set to more than 1, parallelise
+      if(cores>1){
+        print(paste(
+          "Parallelising query using", cores, "cores."
+        ))
+
+        res = parallel::mclapply(X=c(1:nrow(in.table)), mc.cores=cores, FUN=function(x){
+          ensemblQueryLDwithSNPwindow(rsid=in.table$rsid[x],
+                                      r2=r2,
+                                      d.prime=d.prime,
+                                      window.size=window.size,
+                                      pop=pop)
+        }) %>%
+          dplyr::bind_rows() %>%
+          return(.)
+      }
+
+    } else{
+      print("Error: column rsid does not exist in in.table.")
+      stop()
     }
-
-    # bind res together and return
-    print("Returning results table... ")
-    out.list %>%
-      lapply(X=., FUN=function(x){x %>% dplyr::mutate_all(as.character)}) %>%
-      purrr::discard(., ~nrow(.) == 0) %>%
-      do.call("rbind", .) %>%
-      dplyr::mutate(r2 = as.numeric(r2),
-                    d_prime = as.numeric(d_prime)) %>%
-      as.data.frame() %>%
-      return(.)
-
-    # otherwise, run query as usual
   } else{
+    print("Error: in.table is not a data.frame.")
+    stop()
+  }
+}
 
-    print(paste("Query consists of", length(in.table$rsid), "rsid, so running a single query..."))
 
-    in.table %>%
-      dplyr::pull(rsid) %>%
-      ensemblQueryR::ensemblQueryLDwithSNPwindowList(rsid.list=., r2=r2, d.prime=d.prime, window.size=window.size, pop=pop) %>%
-      dplyr::mutate(r2 = as.numeric(r2),
-                    d_prime = as.numeric(d_prime)) %>%
-      as.data.frame() %>%
-      return(.)
-  }}
+library(magrittr)
+
+start_time = Sys.time()
+
+data.frame(rsid=rep(c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870"), 100)) %>%
+  ensemblQueryLDwithSNPwindowDataframe(in.table=.,
+                                       r2=0.8,
+                                       d.prime=0.8,
+                                       window.size=500,
+                                       pop="1000GENOMES:phase_3:EUR",
+                                       cores=1)
+
+end_time = Sys.time()
+time_taken = difftime(end_time, start_time, units='mins')
+print(paste("Time taken using 1 core:", time_taken))
+
+start_time = Sys.time()
+
+data.frame(rsid=rep(c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870"), 100)) %>%
+  ensemblQueryLDwithSNPwindowDataframe(in.table=.,
+                                       r2=0.8,
+                                       d.prime=0.8,
+                                       window.size=500,
+                                       pop="1000GENOMES:phase_3:EUR",
+                                       cores=10)
+
+end_time = Sys.time()
+time_taken = difftime(end_time, start_time, units='mins')
+print(paste("Time taken using 10 cores:", time_taken))
+
+
+
+
