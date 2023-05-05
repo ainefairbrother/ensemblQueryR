@@ -22,33 +22,33 @@ remotes::install_github("ainefairbrother/ensemblQueryR")
 
 ## Setup 
 
-All functions in this package take the `pop` argument which defines the population for which to retrieve LD statistics. So, to get a list of options for this argument, run the `ensemblQueryGetPops()` function.
+To check that the Ensembl server is up and running, the server can be pinged. 
 
 ``` r
-# load libraries
 library(ensemblQueryR)
-library(magrittr)
 
+ensemblQueryR::pingEnsembl()
+```
+
+All functions in this package take the `pop` argument which defines the population for which to retrieve LD metrics. To get a list of options for this argument, run the `ensemblQueryGetPops()` function.
+
+``` r
 ensemblQueryR::ensemblQueryGetPops()
 ```
 
-## Functionality 1: querying LD for window around one query rsID
+## 1. Query LD metrics for a window around a variant  
 
-#### For 1 query rsID
-
-For one query rsID, get all rsIDs in LD using `ensemblQueryLDwithSNPwindow`
+For one query variant, get all variants in LD using `ensemblQueryLDwithSNPwindow`.
 
 ``` r
 ensemblQueryR::ensemblQueryLDwithSNPwindow(rsid="rs3851179", 
-                      r2=0.8, 
-                      d.prime=0.8, 
-                      window.size=500, 
-                      pop="1000GENOMES:phase_3:EUR")
+  r2=0.8, 
+  d.prime=0.8, 
+  window.size=500, 
+  pop="1000GENOMES:phase_3:EUR")
 ```
 
-#### For >1 query rsIDs
-
-There is a separate function for large queries (>1000 rsIDs) because of Ensembl's API query size limit. This function takes a `data.frame` as an input, and gets all rsIDs in LD with a column of query rsIDs called `rsid`. 
+For >1 query rsIDs, the `ensemblQueryLDwithSNPwindowDataframe` function takes a `data.frame` as input, and gets all variants in LD with all query variants. It is possible to parallelise this operation by setting the number of cores above 1.
 
 ``` r
 # example input data
@@ -60,13 +60,14 @@ ensemblQueryR::ensemblQueryLDwithSNPwindowDataframe(
   r2=0.8,
   d.prime=0.8,
   window.size=500,
-  pop="1000GENOMES:phase_3:EUR"
+  pop="1000GENOMES:phase_3:EUR",
+  cores=1
 )
 ```
 
-## Functionality 2: querying LD for a pair of query SNPs
+## 2. Query LD metrics for a pair of variants  
 
-The `ensemblQueryLDwithSNPpair` takes a single pair of query SNPs and provides a `data.frame` of LD statistics for these. 
+The `ensemblQueryLDwithSNPpair` takes a single pair of query SNPs and returns a `data.frame` of LD metrics.
 
 ``` r
 ensemblQueryLDwithSNPpair(
@@ -76,20 +77,20 @@ ensemblQueryLDwithSNPpair(
 )
 ```
 
-The `ensemblQueryLDwithSNPpairDataframe` takes a `data.frame` with columns named `rsid1` and `rsid2` containing many pairs of query SNPs and provides a `data.frame` of LD statistics for these. 
+The `ensemblQueryLDwithSNPpairDataframe` takes a `data.frame` with columns `rsid1` and `rsid2` and returns a `data.frame` of LD metrics for all variant pairs. It is possible to parallelise this operation by setting the number of cores above 1.
 
 ``` r
 ensemblQueryLDwithSNPpairDataframe(
   in.table=data.frame(rsid1=rep("rs6792369", 10), rsid2=rep("rs1042779", 10)),
   pop="1000GENOMES:phase_3:EUR",
   keep.original.table.row.n=F,
-  parallelise=F
+  cores=1
 )
 ```
 
-## Functionality 3: querying LD for a genomic region
+## 3. Query LD metrics for a genomic region  
 
-The `ensemblQueryLDwithSNPregion` function takes a genomic region as input and returns all SNP pairs and their LD statistics within the defined region.
+The `ensemblQueryLDwithSNPregion` function takes genomic coordinates as input and returns all variant pairs and their LD metrics within the defined region.
 
 ``` r
 ensemblQueryLDwithSNPregion(
@@ -98,6 +99,20 @@ ensemblQueryLDwithSNPregion(
   end="25843455",
   pop="1000GENOMES:phase_3:EUR"
 )
+```
+
+The `ensemblQueryLDwithSNPregionDataframe` takes a `data.frame` with columns `chr`, `start` and `end` and returns a `data.frame` of LD metrics for all variant pairs within each defined genomic region. It is possible to parallelise this operation by setting the number of cores above 1.
+
+```r
+
+ensemblQueryLDwithSNPregionDataframe(
+  in.table= data.frame(chr=rep(c("6"), 10),
+                       start=rep(c("25837556"), 10),
+                       end=rep(c("25843455"), 10)),
+  pop="1000GENOMES:phase_3:EUR",
+  cores = 2
+)
+
 ```
 
 ## Disclaimer

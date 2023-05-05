@@ -47,5 +47,9 @@ pingEnsembl = function(){
   r = httr::GET(paste(server, ext, sep = ""), content_type("application/json"))
   response = jsonlite::fromJSON(jsonlite::toJSON(content(r)))$ping
 
+  if(response==1){
+    print("Server OK.")
+  }
+
   return(response)
 }
