@@ -159,6 +159,8 @@ ensemblQueryLDwithSNPregionDataframe = function(in.table, pop="1000GENOMES:phase
   if( is.data.frame(in.table)==TRUE ){
     if( (("chr" %in% colnames(in.table)) & ("start" %in% colnames(in.table)) & ("end" %in% colnames(in.table))) ){
 
+      print(paste("Running ensemblQueryLDwithSNPregionDataframe to retrieve LD metrics for variant pairs in", nrow(in.table), "genomic regions"))
+
       if(cores>1){
         print(paste(
           "Parallelising query using", cores, "cores."

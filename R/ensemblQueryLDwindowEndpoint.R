@@ -169,6 +169,8 @@ ensemblQueryLDwithSNPwindowDataframe = function(in.table, r2=0.8, d.prime=0.8, w
   if( is.data.frame(in.table)==TRUE ){
     if( ("rsid" %in% colnames(in.table)) ){
 
+      print(paste("Running ensemblQueryLDwithSNPwindowDataframe to retrieve LD metrics for" ,window.size, "kb windows around", nrow(in.table), "central variants"))
+
       # else if cores set to more than 1, parallelise
       if(cores>1){
         print(paste(
