@@ -6,7 +6,8 @@
 #' @param window.size Integer. Window size in kb. The maximum allowed value for the window size is 500 kb. LD is computed for the given variant and all variants that are located within the specified window.
 #' @param pop String. Population for which to compute LD. Use `ensemblQueryGetPops()` to retrieve a list of all populations with LD data. Default is 1000GENOMES:phase_3:EUR.
 #'
-#' @return data.frame with 5 columns.
+#'
+#' @return A dataframe.
 #'
 #' @import httr
 #' @import xml2
@@ -23,8 +24,8 @@
 #'
 ensemblQueryLDwithSNPwindow = function(rsid, r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR"){
 
-  # # TEST
-  # # load libs
+  # TEST
+  # load libs
   # require(httr)
   # require(xml2)
   # if( !("tidyverse" %in% (.packages())) ){
@@ -110,32 +111,45 @@ ensemblQueryLDwithSNPwindow = function(rsid, r2=0.8, d.prime=0.8, window.size=50
   }
 }
 
-
-#' Title
+#' `ensemblQueryLDwithSNPwindowDataframe` applies `ensemblQueryLDwithSNPwindow` to a data.frame of rsIDs.
 #'
-#' @param in.table
-#' @param r2
-#' @param d.prime
-#' @param window.size
-#' @param pop
-#' @param cores
+#' @param in.table data.frame containing SNP pairs. Columns must include `rsid1` for the first member of the pair and `rsid2` for the second member of the pair.
+#' @param r2 Float. Measure of LD. If r-squared is provided only return pairs of variants whose r-squared value is equal to or greater than the value provided.
+#' @param d.prime Float. Measure of LD. If D' is provided only return pairs of variants whose D' value is equal to or greater than the value provided.
+#' @param window.size Integer. Window size in kb. The maximum allowed value for the window size is 500 kb. LD is computed for the given variant and all variants that are located within the specified window.
+#' @param pop String. Population for which to compute LD. Use `ensemblQueryGetPops()` to retrieve a list of all populations with LD data. Default is 1000GENOMES:phase_3:EUR.
+#' @param cores Integer. A value between 1 and 10 is accepted, as this prevents the server returning overload-related errors.
 #'
-#' @return
+#' @return A dataframe.
+#'
+#' @import purrr
+#' @import parallel
+#' @importFrom magrittr %>%
+#'
 #' @export
 #'
 #' @examples
-#'
-#' library(magrittr)
-#' data.frame(rsid=rep(c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870"), 100)) %>%
-#'     ensemblQueryLDwithSNPwindowDataframe(in.table=.,
-#'                                          r2=0.8,
-#'                                          d.prime=0.8,
-#'                                          window.size=500,
-#'                                          pop="1000GENOMES:phase_3:EUR",
-#'                                          cores=10)
+#' in.table = data.frame(rsid = rep(c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870"), 10))
+#' ensemblQueryLDwithSNPwindowDataframe(in.table=in.table,
+#'                                      r2=0.8,
+#'                                      d.prime=0.8,
+#'                                      window.size=500,
+#'                                      pop="1000GENOMES:phase_3:EUR",
+#'                                      cores=2)
 #'
 ensemblQueryLDwithSNPwindowDataframe = function(in.table, r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR", cores=1){
 
+  #------------------------------ test -------------------------------
+  # library(purrr)
+  # library(parallel)
+  # library(magrittr)
+  #
+  # in.table = data.frame(rsid = rep(c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870"), 10))
+  # r2=0.8
+  # d.prime=0.8
+  # window.size=500
+  # pop="1000GENOMES:phase_3:EUR"
+  # cores=2
 
   #------------------------------ check inputs -------------------------------
 
@@ -144,7 +158,6 @@ ensemblQueryLDwithSNPwindowDataframe = function(in.table, r2=0.8, d.prime=0.8, w
   stopifnot(is.numeric(d.prime) | is.character(d.prime))
   stopifnot(is.numeric(window.size) | is.character(window.size))
   stopifnot(is.character(pop))
-  stopifnot(is.logical(keep.original.table.row.n))
   stopifnot(is.numeric(cores))
 
   # check that the cores arg is set above 0 but not above the max. available
@@ -156,35 +169,24 @@ ensemblQueryLDwithSNPwindowDataframe = function(in.table, r2=0.8, d.prime=0.8, w
   if( is.data.frame(in.table)==TRUE ){
     if( ("rsid" %in% colnames(in.table)) ){
 
-      # if user has left as default i.e. 1 core, don't parallelise
-      if(cores==1){
-        res = lapply(X=c(1:nrow(in.table)), FUN=function(x){
-          ensemblQueryLDwithSNPwindow(rsid=in.table$rsid[x],
-                                      r2=r2,
-                                      d.prime=d.prime,
-                                      window.size=window.size,
-                                      pop=pop)
-        }) %>%
-          dplyr::bind_rows() %>%
-          return(.)
-      }
-
       # else if cores set to more than 1, parallelise
       if(cores>1){
         print(paste(
           "Parallelising query using", cores, "cores."
         ))
-
-        res = parallel::mclapply(X=c(1:nrow(in.table)), mc.cores=cores, FUN=function(x){
-          ensemblQueryLDwithSNPwindow(rsid=in.table$rsid[x],
-                                      r2=r2,
-                                      d.prime=d.prime,
-                                      window.size=window.size,
-                                      pop=pop)
-        }) %>%
-          dplyr::bind_rows() %>%
-          return(.)
       }
+
+      parallel::mclapply(X=c(1:nrow(in.table)), mc.cores=cores, FUN=function(x){
+        ensemblQueryLDwithSNPwindow(rsid=in.table$rsid[x],
+                                    r2=r2,
+                                    d.prime=d.prime,
+                                    window.size=window.size,
+                                    pop=pop) %>%
+          tidyr::unnest(cols = c(query, snp_in_ld, r2, d_prime, population_name))
+
+      }) %>%
+        dplyr::bind_rows() %>%
+        return(.)
 
     } else{
       print("Error: column rsid does not exist in in.table.")
@@ -197,35 +199,7 @@ ensemblQueryLDwithSNPwindowDataframe = function(in.table, r2=0.8, d.prime=0.8, w
 }
 
 
-library(magrittr)
 
-start_time = Sys.time()
-
-data.frame(rsid=rep(c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870"), 100)) %>%
-  ensemblQueryLDwithSNPwindowDataframe(in.table=.,
-                                       r2=0.8,
-                                       d.prime=0.8,
-                                       window.size=500,
-                                       pop="1000GENOMES:phase_3:EUR",
-                                       cores=1)
-
-end_time = Sys.time()
-time_taken = difftime(end_time, start_time, units='mins')
-print(paste("Time taken using 1 core:", time_taken))
-
-start_time = Sys.time()
-
-data.frame(rsid=rep(c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870"), 100)) %>%
-  ensemblQueryLDwithSNPwindowDataframe(in.table=.,
-                                       r2=0.8,
-                                       d.prime=0.8,
-                                       window.size=500,
-                                       pop="1000GENOMES:phase_3:EUR",
-                                       cores=10)
-
-end_time = Sys.time()
-time_taken = difftime(end_time, start_time, units='mins')
-print(paste("Time taken using 10 cores:", time_taken))
 
 
 

@@ -19,8 +19,6 @@ ensemblQueryGetPops = function(){
   server = "https://rest.ensembl.org"
   ext = "/info/variation/populations/homo_sapiens?filter=LD"
 
-  stop_for_status(r)
-
   r = httr::GET(paste(server, ext, sep = ""), httr::content_type("application/json"))
 
   jsonlite::fromJSON(jsonlite::toJSON(httr::content(r))) %>%

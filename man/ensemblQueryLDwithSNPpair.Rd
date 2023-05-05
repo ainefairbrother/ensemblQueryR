@@ -15,7 +15,7 @@ ensemblQueryLDwithSNPpair(rsid1, rsid2, pop = "1000GENOMES:phase_3:EUR")
 \item{pop}{String. Population for which to compute LD. Use `ensemblQueryGetPops()` to retrieve a list of all populations with LD data. Default is 1000GENOMES:phase_3:EUR.}
 }
 \value{
-data.frame with 5 columns.
+A dataframe.
 }
 \description{
 Function to query Ensembl LD data with a pair of rsIDs.

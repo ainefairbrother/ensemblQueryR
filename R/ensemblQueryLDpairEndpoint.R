@@ -5,7 +5,7 @@
 #' @param rsid2 String. Variant ID 2.
 #' @param pop String. Population for which to compute LD. Use `ensemblQueryGetPops()` to retrieve a list of all populations with LD data. Default is 1000GENOMES:phase_3:EUR.
 #'
-#' @return data.frame with 5 columns.
+#' @return A dataframe.
 #'
 #' @import httr
 #' @import xml2
@@ -61,6 +61,7 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
     print(paste0("Error 400 thrown by httr::GET. One or both of rsid1 (",rsid1,") or rsid2 (", rsid2,")", " may not be a valid SNP rsID, check using dbSNP: https://www.ncbi.nlm.nih.gov/snp/."))
     res.temp = NA
   } else{
+
     # if no error, use this if you get a simple nested list back, otherwise inspect its structure
     res.temp = jsonlite::fromJSON(jsonlite::toJSON(content(r))) %>%
       data.frame()
@@ -106,20 +107,21 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
 #'
 #' @param in.table data.frame containing SNP pairs. Columns must include `rsid1` for the first member of the pair and `rsid2` for the second member of the pair.
 #' @param pop String. Population for which to compute LD. Use `ensemblQueryGetPops()` to retrieve a list of all populations with LD data. Default is 1000GENOMES:phase_3:EUR.
+#' @param cores Integer. A value between 1 and 10 is accepted, as this prevents the server returning overload-related errors.
 #' @param keep.original.table.row.n Boolean. Set this to TRUE to keep all original rows even if they are NULL in the output (meaning that no data has been found for the rsID pair). Set to FALSE to filter these out and report how many were filtered. Default is FALSE.
 #'
-#' @return
+#' @return A dataframe.
 #' @export
 #'
 #' @examples
-#' ensemblQueryLDwithSNPpairDataframe(
-#' in.table=data.frame(rsid1=rep("rs6792369", 10), rsid2=rep("rs1042779", 10)),
-#' pop="1000GENOMES:phase_3:EUR",
-#' keep.original.table.row.n=FALSE)
+#'ensemblQueryLDwithSNPpairDataframe(
+#'  in.table=data.frame(rsid1=rep("rs6792369", 10), rsid2=rep("rs1042779", 10)),
+#'  pop="1000GENOMES:phase_3:EUR",
+#'  keep.original.table.row.n=FALSE)
 #'
-ensemblQueryLDwithSNPpairDataframe = function(in.table, pop="1000GENOMES:phase_3:EUR", keep.original.table.row.n=FALSE){
+ensemblQueryLDwithSNPpairDataframe = function(in.table, pop="1000GENOMES:phase_3:EUR", cores=1, keep.original.table.row.n=FALSE){
 
-  # # TEST
+  #------------------------------ test -------------------------------
   # # load libs
   # require(httr)
   # require(xml2)
@@ -131,23 +133,41 @@ ensemblQueryLDwithSNPpairDataframe = function(in.table, pop="1000GENOMES:phase_3
   # require(purrr)
   # require(vroom)
   # require(magrittr)
+  #
+  # in.table=data.frame(rsid1=rep("rs6792369", 10), rsid2=rep("rs1042779", 10))
+  # pop="1000GENOMES:phase_3:EUR"
+  # keep.original.table.row.n=FALSE
 
   #------------------------------ check inputs -------------------------------
 
   stopifnot(is.data.frame(in.table))
   stopifnot(is.character(pop))
   stopifnot(is.logical(keep.original.table.row.n))
+  stopifnot(is.numeric(cores))
+
+  # check that the cores arg is set above 0 but not above the max. available
+  # cores.available = parallel::detectCores()
+  stopifnot("Cores must be a value between 0 and 10"= (cores>0) & (cores<=10))
 
   #--------------------------------- main ------------------------------------
 
   if( is.data.frame(in.table)==TRUE ){
     if( (("rsid1" %in% colnames(in.table)) & ("rsid2" %in% colnames(in.table))) ){
 
-      res = lapply(X=c(1:nrow(in.table)), FUN=function(x){
+      print(paste("Running ensemblQueryLDwithSNPpairDataframe to retrieve LD metrics for", nrow(in.table), "variant pairs..."))
+
+      if(cores>1){
+        print(paste(
+          "Parallelising query using", cores, "cores"
+        ))
+      }
+
+      res = parallel::mclapply(X=c(1:nrow(in.table)), mc.cores=cores, FUN=function(x){
 
         ensemblQueryLDwithSNPpair(rsid1=in.table$rsid1[x],
                                   rsid2=in.table$rsid2[x],
-                                  pop=pop)
+                                  pop=pop) %>%
+          tidyr::unnest(cols = c(query1, query2, r2, d_prime, population_name))
 
       }) %>%
         dplyr::bind_rows()

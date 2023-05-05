@@ -2,7 +2,7 @@
 % Please edit documentation in R/ensemblQueryLDregionEndpoint.R
 \name{ensemblQueryLDwithSNPregion}
 \alias{ensemblQueryLDwithSNPregion}
-\title{Function to query Ensembl LD data within a genomic window.}
+\title{Function to query Ensembl LD data within a genomic window to get all variant pairs in the specified region and associated LD metrics.}
 \usage{
 ensemblQueryLDwithSNPregion(chr, start, end, pop = "1000GENOMES:phase_3:EUR")
 }
@@ -15,8 +15,11 @@ ensemblQueryLDwithSNPregion(chr, start, end, pop = "1000GENOMES:phase_3:EUR")
 
 \item{pop}{String. Population for which to compute LD. Use `ensemblQueryGetPops()` to retrieve a list of all populations with LD data. Default is 1000GENOMES:phase_3:EUR.}
 }
+\value{
+A dataframe.
+}
 \description{
-Function to query Ensembl LD data within a genomic window.
+Function to query Ensembl LD data within a genomic window to get all variant pairs in the specified region and associated LD metrics.
 }
 \examples{
 ensemblQueryLDwithSNPregion(

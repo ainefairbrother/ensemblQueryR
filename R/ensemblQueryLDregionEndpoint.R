@@ -1,11 +1,11 @@
-#' Function to query Ensembl LD data within a genomic window.
+#' Function to query Ensembl LD data within a genomic window to get all variant pairs in the specified region and associated LD metrics.
 #'
 #' @param chr String. Chromosome that the query region is located on.
 #' @param start String. Base pair that the query region starts at.
 #' @param end String. Base pair that the query region ends at.
 #' @param pop String. Population for which to compute LD. Use `ensemblQueryGetPops()` to retrieve a list of all populations with LD data. Default is 1000GENOMES:phase_3:EUR.
 #'
-#' @return
+#' @return A dataframe.
 #'
 #' @import httr
 #' @import xml2
@@ -111,5 +111,82 @@ ensemblQueryLDwithSNPregion = function(chr, start, end, pop="1000GENOMES:phase_3
         dplyr::relocate(rsid1, rsid2, r2, d_prime, population_name) %>%
         return()
     }
+  }
+}
+
+#' `ensemblQueryLDwithSNPregionDataframe` applies `ensemblQueryLDwithSNPregion` to a data.frame of genomic coordinates and returns all variant pairs present in each specified genomic region and their associated LD metrics.
+#'
+#' @param in.table Dataframe containing genomic coordinates. Columns must include `chr` (the chromosome), `start` (the starting genomic coordinate) and `end` (the ending genomic coordinate).
+#' @param pop String. Population for which to compute LD. Use `ensemblQueryGetPops()` to retrieve a list of all populations with LD data. Default is 1000GENOMES:phase_3:EUR.
+#' @param cores Integer. A value between 1 and 10 is accepted, as this prevents the server returning overload-related errors.
+#'
+#' @return A dataframe.
+#' @export
+#'
+#' @examples
+#' library(magrittr)
+#'
+#' data.frame(
+#'   chr=rep(c("6"), 10),
+#'   start=rep(c("25837556"), 10),
+#'   end=rep(c("25843455"), 10)
+#' ) %>%
+#'   ensemblQueryLDwithSNPregionDataframe(
+#'     in.table=.,
+#'     pop="1000GENOMES:phase_3:EUR",
+#'     cores = 2
+#'   )
+#'
+ensemblQueryLDwithSNPregionDataframe = function(in.table, pop="1000GENOMES:phase_3:EUR", cores=1){
+
+  # # Test
+  # library(purrr)
+  # library(parallel)
+  # library(magrittr)
+
+  #------------------------------ check inputs -------------------------------
+
+  stopifnot(is.data.frame(in.table))
+  stopifnot(is.character(pop))
+  stopifnot(is.numeric(cores))
+
+  # check that the cores arg is set above 0 but not above the max. available
+  # cores.available = parallel::detectCores()
+  stopifnot("Cores must be a value between 0 and 10"= (cores>0) & (cores<=10))
+
+  #--------------------------------- main ------------------------------------
+
+  if( is.data.frame(in.table)==TRUE ){
+    if( (("chr" %in% colnames(in.table)) & ("start" %in% colnames(in.table)) & ("end" %in% colnames(in.table))) ){
+
+      if(cores>1){
+        print(paste(
+          "Parallelising query using", cores, "cores."
+        ))
+      }
+
+      parallel::mclapply(X=c(1:nrow(in.table)), mc.cores=cores, FUN=function(x){
+
+        ensemblQueryLDwithSNPregion(chr=in.table$chr[x],
+                                    start=in.table$start[x],
+                                    end=in.table$end[x],
+                                    pop=pop) %>%
+          tidyr::unnest(cols = c(rsid1, rsid2, r2, d_prime, population_name)) %>%
+          dplyr::mutate(query_chr = in.table$chr[x],
+                        query_start = in.table$start[x],
+                        query_end = in.table$chr[x]) %>%
+          dplyr::relocate(query_chr, query_start, query_end)
+
+      }) %>%
+        dplyr::bind_rows() %>%
+        return(.)
+
+    } else{
+      print("Error: one or more of 'chr', 'start' or 'end' column(s) does not exist in in.table.")
+      stop()
+    }
+  } else{
+    print("Error: in.table is not a data.frame.")
+    stop()
   }
 }
