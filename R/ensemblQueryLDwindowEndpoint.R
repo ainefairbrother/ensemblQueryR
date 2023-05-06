@@ -58,8 +58,6 @@ ensemblQueryLDwithSNPwindow = function(rsid, r2=0.8, d.prime=0.8, window.size=50
 
   r <- httr::GET(url=paste(server, ext, sep = ""), content_type("application/json"))
 
-  stop_for_status(r)
-
   #-------------------- check output and write out ---------------------------
 
   # stop_for_status(r)

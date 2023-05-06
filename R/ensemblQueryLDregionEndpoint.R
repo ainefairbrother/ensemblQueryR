@@ -59,7 +59,7 @@ ensemblQueryLDwithSNPregion = function(chr, start, end, pop="1000GENOMES:phase_3
 
   r <- httr::GET(url=paste(server, ext, sep = ""), content_type("application/json"))
 
-  stop_for_status(r)
+  # stop_for_status(r)
 
   #-------------------- check output and write out ---------------------------
 
