@@ -32,6 +32,7 @@ install.packages('purrr'); \
 install.packages('tidyr'); \
 install.packages('vroom'); \
 install.packages('magrittr'); \
+install.packages('parallel'); \
 library(httr); \
 library(xml2); \
 library(dplyr); \
@@ -39,7 +40,8 @@ library(jsonlite); \
 library(purrr); \
 library(tidyr); \
 library(vroom); \
-library(magrittr);"
+library(magrittr); \
+library(parallel)"
 
 # install and load ensemblQueryR - install from clone
 RUN apt-get install -y git

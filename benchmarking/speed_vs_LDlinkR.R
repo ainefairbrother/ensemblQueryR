@@ -1,3 +1,6 @@
+remotes::install_github("ainefairbrother/ensemblQueryR")
+library(ensemblQueryR)
+
 # -- 1. test LDlinkR --------------------------------------------
 
 # clear env
