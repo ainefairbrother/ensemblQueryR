@@ -70,7 +70,7 @@ ensemblQueryR::ensemblQueryLDwithSNPwindowDataframe(
 The `ensemblQueryLDwithSNPpair` takes a single pair of query SNPs and returns a `data.frame` of LD metrics.
 
 ``` r
-ensemblQueryLDwithSNPpair(
+ensemblQueryR::ensemblQueryLDwithSNPpair(
   rsid1="rs6792369",
   rsid2="rs1042779",
   pop="1000GENOMES:phase_3:EUR"
@@ -81,10 +81,10 @@ The `ensemblQueryLDwithSNPpairDataframe` takes a `data.frame` with columns `rsid
 
 ``` r
 # example input data
-data.frame(rsid1=rep("rs6792369", 10), rsid2=rep("rs1042779", 10))
+in.table <- data.frame(rsid1=rep("rs6792369", 10), rsid2=rep("rs1042779", 10))
 
 # run query on in.table
-ensemblQueryLDwithSNPpairDataframe(
+ensemblQueryR::ensemblQueryLDwithSNPpairDataframe(
   in.table=in.table,
   pop="1000GENOMES:phase_3:EUR",
   keep.original.table.row.n=F,
@@ -97,7 +97,7 @@ ensemblQueryLDwithSNPpairDataframe(
 The `ensemblQueryLDwithSNPregion` function takes genomic coordinates as input and returns all variant pairs and their LD metrics within the defined region.
 
 ``` r
-ensemblQueryLDwithSNPregion(
+ensemblQueryR::ensemblQueryLDwithSNPregion(
   chr="6",
   start="25837556",
   end="25843455",
@@ -114,7 +114,7 @@ in.table = data.frame(chr=rep(c("6"), 10),
                        end=rep(c("25843455"), 10))
                        
 # run query on in.table
-ensemblQueryLDwithSNPregionDataframe(
+ensemblQueryR::ensemblQueryLDwithSNPregionDataframe(
   in.table= ,
   pop="1000GENOMES:phase_3:EUR",
   cores = 2
