@@ -21,9 +21,8 @@ RUN apt-get update && apt-get install -y \
     libmpfr-dev
 RUN apt-get install libcurl4-openssl-dev -y
 
-# install and load ensemblQueryR dependencies - package versions are those used at the time of package development
+# install and load ensemblQueryR dependencies
 RUN R -e "install.packages('remotes'); \
-library(remotes); \
 install.packages('httr'); \
 install.packages('xml2'); \
 install.packages('dplyr'); \
@@ -33,6 +32,7 @@ install.packages('tidyr'); \
 install.packages('vroom'); \
 install.packages('magrittr'); \
 install.packages('parallel'); \
+library(remotes); \
 library(httr); \
 library(xml2); \
 library(dplyr); \

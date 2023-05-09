@@ -40,10 +40,10 @@ ensemblQueryLDwithSNPregion = function(chr, start, end, pop="1000GENOMES:phase_3
   # require(vroom)
   # require(magrittr)
 
-  # chr=6
-  # start=25837556
-  # end=25843455 #25843455
-  # pop="1000GENOMES:phase_3:EUR"
+  chr=6
+  start=25837556
+  end=25843455 #25843455
+  pop="1000GENOMES:phase_3:EUR"
 
   #------------------------------ check inputs -------------------------------
 
@@ -65,7 +65,13 @@ ensemblQueryLDwithSNPregion = function(chr, start, end, pop="1000GENOMES:phase_3
 
   # error handling, if 400 error, set res.temp as NA
   if(r$status_code == 400){
-    print("Error 400 thrown by httr::GET. This may not be a valid SNP rsID, check using dbSNP: https://www.ncbi.nlm.nih.gov/snp/.")
+    print(paste(
+      "Error 400 thrown by httr::GET. Please check your input data for validity.",
+      "CHR=",chr,"START=",start,"END=",end, "",
+      chr, "may be an invalid chromosome identifier - this should be 1,2,3 ... 22, X or Y.",
+      start, "may be an invalid genomic position - this should be a number lower than the maximum number of bases in the query chromosome.",
+      end, "may be an invalid genomic position - this should be a number lower than the maximum number of bases in the query chromosome."
+    ))
     res.temp = NA
   } else{
     # if no error, use this if you get a simple nested list back, otherwise inspect its structure

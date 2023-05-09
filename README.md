@@ -121,6 +121,16 @@ ensemblQueryR::ensemblQueryLDwithSNPregionDataframe(
 )
 ```
 
+## Docker
+
+We have provided a Docker image, enabling this tool to be run regardless of your local operating system or R version. This can be found [here](https://hub.docker.com/r/ainefairbrotherbrowne/ensemblqueryr/tags). As long as you have Docker installed, the code below will allow you to pull this image, run a container and execute it. You will then be able to use `ensemblQueryR` as described above. 
+
+```bash
+docker pull ainefairbrotherbrowne/ensemblqueryr:1.0; \
+docker run -t -d --name ensemblqueryr ainefairbrotherbrowne/ensemblqueryr:1.0; \ 
+docker exec -i -t ensemblqueryr R
+```
+
 ## Disclaimer
 
 Please note that this code is still under development and may contain bugs or errors. It is not recommended for use in production environments. Use at your own risk. I am working on improving the code, addressing any issues, and expanding the package's capabilities so please check back for updates.

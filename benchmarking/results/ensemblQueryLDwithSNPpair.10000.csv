@@ -1,2 +1,0 @@
-function_tested	n_queries	time.min	nrow.outtable
-ensemblQueryR::ensemblQueryLDwithSNPpair	10000	16.179393851757	10000

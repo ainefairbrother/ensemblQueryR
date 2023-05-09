@@ -129,7 +129,7 @@ library(dplyr)
 library(ggplot2)
 library(ggsci)
 
-#---- Set defaults for ggplots ----
+# Set defaults for ggplots
 theme_rhr <- theme_set(
   theme_bw(base_family = "Helvetica",
            base_size = 10) +
@@ -139,7 +139,7 @@ theme_rhr <- theme_set(
           panel.spacing = unit(0.1, "lines"))
 )
 
-speed.plot = list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/results",
+speed.line = list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/results/speed/",
                         pattern=".csv",
                         full.names=T) %>%
   lapply(X=., FUN=function(x){
@@ -158,33 +158,69 @@ speed.plot = list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/resul
                   TRUE ~ time.min),
                 n_queries = paste0(n_queries, " queries")
   ) %>%
-  dplyr::mutate(n_queries = factor(n_queries, levels=c("100 queries", "1000 queries", "5000 queries", "10000 queries"))) %>%
+  dplyr::mutate(n_queries = factor(n_queries, levels=c("100 queries", "1000 queries", "5000 queries", "10000 queries")),
+                queries_numeric = readr::parse_number(as.character(n_queries))) %>%
+  dplyr::filter(queries_numeric!=5000) %>%
+{
+  ggplot(data=., aes(x=queries_numeric, y=time.min, colour=package)) +
+  geom_line(aes(linetype=function_tested)) +
+  geom_point() +
+  scale_x_continuous(breaks=c(100,1000,10000)) +
+  scale_y_continuous(breaks = c(seq(0,max(.$time.min)+30,30))) +
+  xlab("Number of queries") +
+  ylab("Time taken (mins)") +
+  scale_colour_npg() +
+  theme(legend.title = element_blank()) +
+        # plot.margin = margin(1,1,1,1, "cm")) +
+  guides(linetype = guide_legend(nrow = 3),
+         colour = guide_legend(nrow = 2))
+}
 
-  ggplot(data=., aes(y=reorder(function_tested, time.min), x=time.min, fill=package)) +
-  geom_col() +
-  xlab("Time taken (mins)") +
-  ylab("") +
-  xlim(0,55) +
-  scale_fill_npg() +
-  facet_grid(~n_queries) +
-  theme(legend.title = element_blank(),
-        plot.margin = margin(1,1,1,1, "cm")) +
-  geom_text(aes(label = round(time.min, 1)), size=2, show.legend = FALSE, alpha=0.75, hjust=0)
-speed.plot
+###################################################################
 
-speed.plot %>%
-  ggsave(
-    path="/home/abrowne/projects/ensemblQueryR/img/",
-    filename="01-speed_vs_LDlinkR.png",
-    plot = .,
-    device = "png",
-    scale = 1,
-    width = 6.5,
-    height = 2.5,
-    units = c("in"),
-    dpi = 300
-  )
-
-
-
-
+# speed.bar = list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/results",
+#                        pattern=".csv",
+#                        full.names=T) %>%
+#   lapply(X=., FUN=function(x){
+#     vroom::vroom(x, col_types = c(nrow.outtable = "c"))
+#   }) %>%
+#   dplyr::bind_rows() %>%
+#   dplyr::mutate(package =
+#                   case_when(
+#                     grepl("ensemblQueryR", function_tested) ~ "ensemblQueryR",
+#                     grepl("LDlinkR", function_tested) ~ "LDlinkR"
+#                   ),
+#                 function_tested=gsub("ensemblQueryR::", "", function_tested),
+#                 function_tested=gsub("LDlinkR::", "", function_tested),
+#                 time.min = case_when(
+#                   grepl("Error", nrow.outtable) ~ NA_real_,
+#                   TRUE ~ time.min),
+#                 n_queries = paste0(n_queries, " queries")
+#   ) %>%
+#   dplyr::mutate(n_queries = factor(n_queries, levels=c("100 queries", "1000 queries", "5000 queries", "10000 queries")),
+#                 queries_numeric = readr::parse_number(as.character(n_queries))) %>%
+#   dplyr::filter(queries_numeric!=5000) %>%
+#
+#   ggplot(data=., aes(y=reorder(function_tested, time.min), x=time.min, fill=package)) +
+#   geom_col() +
+#   xlab("Time taken (mins)") +
+#   ylab("") +
+#   xlim(0,650) +
+#   scale_fill_npg() +
+#   facet_grid(~n_queries) +
+#   theme(legend.title = element_blank()) +
+#   # plot.margin = margin(1,1,1,1, "cm")) +
+#   geom_text(aes(label = round(time.min, 1)), size=2, show.legend = FALSE, alpha=0.75, hjust=0)
+#
+# speed.bar %>%
+#   ggsave(
+#     path="/home/abrowne/projects/ensemblQueryR/img/",
+#     filename="01-speed_vs_LDlinkR.png",
+#     plot = .,
+#     device = "png",
+#     scale = 1,
+#     width = 7,
+#     height = 2.5,
+#     units = c("in"),
+#     dpi = 300
+#   )

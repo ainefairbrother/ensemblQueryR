@@ -1,2 +1,0 @@
-function_tested	n_queries	time.min	nrow.outtable
-ensemblQueryR::ensemblQueryLDwithSNPpairDataframe	100	0.187721939881643	100
