@@ -183,10 +183,11 @@ ensemblQueryLDwithSNPregionDataframe = function(in.table, pop="1000GENOMES:phase
           dplyr::mutate(query_chr = in.table$chr[x],
                         query_start = in.table$start[x],
                         query_end = in.table$chr[x]) %>%
-          dplyr::relocate(query_chr, query_start, query_end)
+          dplyr::relocate(query_chr, query_start, query_end) %>%
+          as.data.frame()
 
       }) %>%
-        dplyr::bind_rows() %>%
+        do.call("rbind", .) %>%
         return(.)
 
     } else{

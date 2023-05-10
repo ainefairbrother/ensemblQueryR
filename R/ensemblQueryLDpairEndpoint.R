@@ -119,7 +119,7 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
 #'  pop="1000GENOMES:phase_3:EUR",
 #'  keep.original.table.row.n=FALSE)
 #'
-ensemblQueryLDwithSNPpairDataframe = function(in.table, pop="1000GENOMES:phase_3:EUR", cores=1, keep.original.table.row.n=FALSE){
+ensemblQueryLDwithSNPpairDataframe = function(in.table, pop="1000GENOMES:phase_3:EUR", cores=1){ #keep.original.table.row.n=FALSE
 
   #------------------------------ test -------------------------------
   # # load libs
@@ -137,17 +137,18 @@ ensemblQueryLDwithSNPpairDataframe = function(in.table, pop="1000GENOMES:phase_3
   # in.table=data.frame(rsid1=rep("rs6792369", 10), rsid2=rep("rs1042779", 10))
   # pop="1000GENOMES:phase_3:EUR"
   # keep.original.table.row.n=FALSE
+  # cores=2
 
   #------------------------------ check inputs -------------------------------
 
   stopifnot(is.data.frame(in.table))
   stopifnot(is.character(pop))
-  stopifnot(is.logical(keep.original.table.row.n))
+  # stopifnot(is.logical(keep.original.table.row.n))
   stopifnot(is.numeric(cores))
 
   # check that the cores arg is set above 0 but not above the max. available
   # cores.available = parallel::detectCores()
-  stopifnot("Cores must be a value between 0 and 10"= (cores>0) & (cores<=10))
+  # stopifnot("Cores must be a value between 0 and 10"= (cores>0) & (cores<=10))
 
   #--------------------------------- main ------------------------------------
 
@@ -167,30 +168,32 @@ ensemblQueryLDwithSNPpairDataframe = function(in.table, pop="1000GENOMES:phase_3
         ensemblQueryLDwithSNPpair(rsid1=in.table$rsid1[x],
                                   rsid2=in.table$rsid2[x],
                                   pop=pop) %>%
-          tidyr::unnest(cols = c(query1, query2, r2, d_prime, population_name))
+          tidyr::unnest(cols = c(query1, query2, r2, d_prime, population_name)) %>%
+          as.data.frame()
 
       }) %>%
-        dplyr::bind_rows()
+        do.call("rbind", .) %>%
+        return()
 
-      # either filter null rows, or keep depending on arg - this can clean up rows where no data was found for the snp pair
-      if(keep.original.table.row.n==FALSE){
-        res.original.len = nrow(res)
-
-        res = res %>%
-          tidyr::drop_na()
-
-        res.filtered.len = nrow(res)
-
-        if(res.original.len!=res.filtered.len){
-          n.filtered = res.original.len-res.filtered.len
-          print(paste0(n.filtered, " rows filtered out due to no data for rsID pairs."))
-        }
-
-        return(res)
-
-      } else{
-        return(res)
-      }
+      # # either filter null rows, or keep depending on arg - this can clean up rows where no data was found for the snp pair
+      # if(keep.original.table.row.n==FALSE){
+      #   res.original.len = nrow(res)
+      #
+      #   res = res %>%
+      #     tidyr::drop_na()
+      #
+      #   res.filtered.len = nrow(res)
+      #
+      #   if(res.original.len!=res.filtered.len){
+      #     n.filtered = res.original.len-res.filtered.len
+      #     print(paste0(n.filtered, " rows filtered out due to no data for rsID pairs."))
+      #   }
+      #
+      #   return(res)
+      #
+      # } else{
+      #   return(res)
+      # }
 
     } else{
       print("Error: columns rsid1 and rsid2 do not exist in in.table.")

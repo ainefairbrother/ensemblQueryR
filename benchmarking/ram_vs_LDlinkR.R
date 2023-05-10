@@ -1,52 +1,54 @@
 # remotes::install_github("ainefairbrother/ensemblQueryR")
 # library(ensemblQueryR)
 
+# -- 1. Run for 100,1000,10000 queries --------------------------------------------
+
 for(n in c(100,1000,10000)){
 
-  # -- 1. test LDlinkR --------------------------------------------
-
-  # clear env
-  rm(t, u)
-
-  # load libs
-  library(LDlinkR)
-  library(magrittr)
-  library(peakRAM)
-  library(ensemblQueryR)
-
-  t = list(
-    c(rep("rs6792369", n)),
-    c(rep("rs1042779", n))
-  )
-
-  u=try(peakRAM(
-    lapply(X=c(1:n),
-           FUN=function(x){
-
-             LDlinkR::LDpair(
-               var1=t[[1]][x],
-               var2=t[[2]][x],
-               pop = "CEU",
-               token = "5a141d21fa57",
-               output = "table"
-             ) %>%
-               return()
-
-           }) %>%
-      dplyr::bind_rows()
-  ))
-
-  # save results
-  if( grepl("Error", u[1])==FALSE ){
-    data.frame(function_tested="LDlinkR::LDpair",
-               n_queries=n,
-               time.sec=u$Elapsed_Time_sec,
-               peak.ram = u$Peak_RAM_Used_MiB,
-               total.ram = u$Total_RAM_Used_MiB) %>%
-      vroom::vroom_write(x=., file=paste0("/home/abrowne/projects/ensemblQueryR/benchmarking/results/ram/", "LDpair", ".", n, ".csv"))
-  } else{
-    print(u)
-  }
+  # # -- 1. test LDlinkR --------------------------------------------
+  #
+  # # clear env
+  # rm(t, u)
+  #
+  # # load libs
+  # library(LDlinkR)
+  # library(magrittr)
+  # library(peakRAM)
+  # library(ensemblQueryR)
+  #
+  # t = list(
+  #   c(rep("rs6792369", n)),
+  #   c(rep("rs1042779", n))
+  # )
+  #
+  # u=try(peakRAM(
+  #   lapply(X=c(1:n),
+  #          FUN=function(x){
+  #            print(x)
+  #            LDlinkR::LDpair(
+  #              var1=t[[1]][x],
+  #              var2=t[[2]][x],
+  #              pop = "CEU",
+  #              token = "5a141d21fa57",
+  #              output = "table"
+  #            ) %>%
+  #              return()
+  #
+  #          }) %>%
+  #     dplyr::bind_rows()
+  # ))
+  #
+  # # save results
+  # if( grepl("Error", u[1])==FALSE ){
+  #   data.frame(function_tested="LDlinkR::LDpair",
+  #              n_queries=n,
+  #              time.sec=u$Elapsed_Time_sec,
+  #              peak.ram = u$Peak_RAM_Used_MiB,
+  #              total.ram = u$Total_RAM_Used_MiB) %>%
+  #     vroom::vroom_write(x=., file=paste0("/home/abrowne/projects/ensemblQueryR/benchmarking/results/ram/", "LDpair", ".", n, ".csv"))
+  # } else{
+  #   print(u)
+  # }
 
   # -- 2a. test ensemblQueryR::ensemblQueryLDwithSNPpair --------------------------------------------
 
@@ -120,7 +122,7 @@ for(n in c(100,1000,10000)){
   }
 }
 
-# -- 3. Plot performance --------------------------------------------
+# -- 2. Plot performance --------------------------------------------
 
 library(magrittr)
 library(dplyr)
@@ -139,8 +141,8 @@ theme_rhr <- theme_set(
 )
 
 ram.line = list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/results/ram",
-                     pattern=".csv",
-                     full.names=T) %>%
+                      pattern=".csv",
+                      full.names=T) %>%
   lapply(X=., FUN=function(x){
     vroom::vroom(x)
   }) %>%
@@ -170,7 +172,7 @@ ram.line = list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/results
   guides(linetype = guide_legend(nrow = 3),
          colour = guide_legend(nrow = 2))
 
-# -- 4. Generate speed + RAM figure --------------------------------------------
+# -- 3. Generate speed + RAM figure --------------------------------------------
 
 (
   (
@@ -183,54 +185,8 @@ ram.line = list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/results
     plot = .,
     device = "png",
     scale = 1,
-    width = 6,
-    height = 3.5,
+    width = 7,
+    height = 4,
     units = c("in"),
     dpi = 300
   )
-
-######################################################################################################################################
-
-# ram.bar = list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/results/ram",
-#                         pattern=".csv",
-#                         full.names=T) %>%
-#   lapply(X=., FUN=function(x){
-#     vroom::vroom(x)
-#   }) %>%
-#   dplyr::bind_rows() %>%
-#   dplyr::mutate(package =
-#                   case_when(
-#                     grepl("ensemblQueryR", function_tested) ~ "ensemblQueryR",
-#                     grepl("LDlinkR", function_tested) ~ "LDlinkR"
-#                   ),
-#                 function_tested=gsub("ensemblQueryR::", "", function_tested),
-#                 function_tested=gsub("LDlinkR::", "", function_tested),
-#                 n_queries = paste0(n_queries, " queries")
-#   ) %>%
-#   dplyr::mutate(n_queries = factor(n_queries, levels=c("100 queries", "1000 queries", "5000 queries", "10000 queries")),
-#                 queries_numeric = readr::parse_number(as.character(n_queries))) %>%
-#   dplyr::filter(queries_numeric!=5000) %>%
-#
-#   ggplot(data=., aes(y=reorder(function_tested, peak.ram), x=peak.ram, fill=package)) +
-#   geom_col() +
-#   xlab("Peak RAM used (MiB)") +
-#   ylab("") +
-#   scale_fill_npg() +
-#   facet_grid(~n_queries) +
-#   theme(legend.title = element_blank()) +
-#         # plot.margin = margin(1,1,1,1, "cm")) +
-#   geom_text(aes(label = peak.ram), size=2, show.legend = FALSE, alpha=0.75, hjust=0)
-
-# speed.bar %>%
-#   ggsave(
-#     path="/home/abrowne/projects/ensemblQueryR/img/",
-#     filename="02-ram_vs_LDlinkR.png",
-#     plot = .,
-#     device = "png",
-#     scale = 1,
-#     width = 7,
-#     height = 2.5,
-#     units = c("in"),
-#     dpi = 300
-#   )
-

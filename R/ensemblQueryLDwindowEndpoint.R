@@ -186,10 +186,11 @@ ensemblQueryLDwithSNPwindowDataframe = function(in.table, r2=0.8, d.prime=0.8, w
                                     d.prime=d.prime,
                                     window.size=window.size,
                                     pop=pop) %>%
-          tidyr::unnest(cols = c(query, snp_in_ld, r2, d_prime, population_name))
+          tidyr::unnest(cols = c(query, snp_in_ld, r2, d_prime, population_name)) %>%
+          as.data.frame()
 
       }) %>%
-        dplyr::bind_rows() %>%
+        do.call("rbind", .) %>%
         return(.)
 
     } else{
