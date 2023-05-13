@@ -186,9 +186,6 @@ ensemblQueryLDwithSNPregionDataframe = function(in.table, pop="1000GENOMES:phase
                                     end=in.table$end[x],
                                     pop=pop) %>%
           tidyr::unnest(cols = c(query_chr, query_start, query_end, rsid1, rsid2, r2, d_prime, population_name)) %>%
-          # dplyr::mutate(query_chr = in.table$chr[x],
-          #               query_start = in.table$start[x],
-          #               query_end = in.table$chr[x]) %>%
           dplyr::relocate(query_chr, query_start, query_end, rsid1, rsid2, r2, d_prime, population_name) %>%
           as.data.frame()
 

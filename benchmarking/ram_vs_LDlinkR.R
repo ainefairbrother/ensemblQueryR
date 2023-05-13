@@ -1,124 +1,123 @@
-# remotes::install_github("ainefairbrother/ensemblQueryR")
-# library(ensemblQueryR)
+# load libs
+devtools::load_all("/home/abrowne/projects/ensemblQueryR/")
+library(LDlinkR)
+library(magrittr)
+library(peakRAM)
 
 # -- 1. Run for 100,1000,10000 queries --------------------------------------------
 
-for(n in c(100,1000,10000)){
+for(i in c(1:10)){
+  for(n in c(100,1000,10000)){
 
-  # # -- 1. test LDlinkR --------------------------------------------
-  #
-  # # clear env
-  # rm(t, u)
-  #
-  # # load libs
-  # library(LDlinkR)
-  # library(magrittr)
-  # library(peakRAM)
-  # library(ensemblQueryR)
-  #
-  # t = list(
-  #   c(rep("rs6792369", n)),
-  #   c(rep("rs1042779", n))
-  # )
-  #
-  # u=try(peakRAM(
-  #   lapply(X=c(1:n),
-  #          FUN=function(x){
-  #            print(x)
-  #            LDlinkR::LDpair(
-  #              var1=t[[1]][x],
-  #              var2=t[[2]][x],
-  #              pop = "CEU",
-  #              token = "5a141d21fa57",
-  #              output = "table"
-  #            ) %>%
-  #              return()
-  #
-  #          }) %>%
-  #     dplyr::bind_rows()
-  # ))
-  #
-  # # save results
-  # if( grepl("Error", u[1])==FALSE ){
-  #   data.frame(function_tested="LDlinkR::LDpair",
-  #              n_queries=n,
-  #              time.sec=u$Elapsed_Time_sec,
-  #              peak.ram = u$Peak_RAM_Used_MiB,
-  #              total.ram = u$Total_RAM_Used_MiB) %>%
-  #     vroom::vroom_write(x=., file=paste0("/home/abrowne/projects/ensemblQueryR/benchmarking/results/ram/", "LDpair", ".", n, ".csv"))
-  # } else{
-  #   print(u)
-  # }
+    print(paste(
+      "Processing", i, n
+    ))
 
-  # -- 2a. test ensemblQueryR::ensemblQueryLDwithSNPpair --------------------------------------------
+    # -- 1. test LDlinkR --------------------------------------------
 
-  # clear env
-  rm(t, u)
+    # clear env
+    rm(t, u)
 
-  # load libs
-  library(ensemblQueryR)
-  library(magrittr)
-  library(peakRAM)
+    t = list(
+      c(rep("rs6792369", n)),
+      c(rep("rs1042779", n))
+    )
 
-  t = list(
-    c(rep("rs6792369", n)),
-    c(rep("rs1042779", n))
-  )
+    u=try(peakRAM(
+      lapply(X=c(1:n),
+             FUN=function(x){
+               print(x)
+               LDlinkR::LDpair(
+                 var1=t[[1]][x],
+                 var2=t[[2]][x],
+                 pop = "CEU",
+                 token = "5a141d21fa57",
+                 output = "table"
+               ) %>%
+                 return()
 
-  u=try(peakRAM(
-    lapply(X=c(1:n),
-           FUN=function(x){
+             }) %>%
+        dplyr::bind_rows()
+    ))
 
-             ensemblQueryLDwithSNPpair(
-               rsid1=t[[1]][x],
-               rsid2=t[[2]][x],
-               pop="1000GENOMES:phase_3:EUR"
-             ) %>%
-               return()
+    # save results
+    if( grepl("Error", u[1])==FALSE ){
+      data.frame(function_tested="LDlinkR::LDpair",
+                 n_queries=n,
+                 time.sec=u$Elapsed_Time_sec,
+                 peak.ram = u$Peak_RAM_Used_MiB,
+                 total.ram = u$Total_RAM_Used_MiB) %>%
+        vroom::vroom_write(x=., file=paste0("/home/abrowne/projects/ensemblQueryR/benchmarking/results/ram/", "LDpair", ".", n,".",i,".csv"))
+    } else{
+      print(u)
+    }
 
-           }) %>%
-      dplyr::bind_rows()
-  ))
+    # -- 2a. test ensemblQueryR::ensemblQueryLDwithSNPpair --------------------------------------------
 
-  # save results
-  if( grepl("Error", u[1])==FALSE ){
-    data.frame(function_tested="ensemblQueryR::ensemblQueryLDwithSNPpair",
-               n_queries=n,
-               time.sec=u$Elapsed_Time_sec,
-               peak.ram = u$Peak_RAM_Used_MiB,
-               total.ram = u$Total_RAM_Used_MiB) %>%
-      vroom::vroom_write(x=., file=paste0("/home/abrowne/projects/ensemblQueryR/benchmarking/results/ram/", "ensemblQueryLDwithSNPpair", ".", n, ".csv"))
-  }else{
-    print(u)
-  }
+    # clear env
+    rm(t, u)
 
-  # -- 2b. test ensemblQueryR::ensemblQueryLDwithSNPpairDataframe --------------------------------------------
+    t = list(
+      c(rep("rs6792369", n)),
+      c(rep("rs1042779", n))
+    )
 
-  # clear env
-  rm(t, u)
+    u=try(peakRAM(
+      lapply(X=c(1:n),
+             FUN=function(x){
 
-  t = data.frame(
-    rsid1 = c(rep("rs6792369", n)),
-    rsid2 = c(rep("rs1042779", n))
-  )
+               ensemblQueryLDwithSNPpair(
+                 rsid1=t[[1]][x],
+                 rsid2=t[[2]][x],
+                 pop="1000GENOMES:phase_3:EUR"
+               ) %>%
+                 return()
 
-  u=try(peakRAM(
-    ensemblQueryLDwithSNPpairDataframe(
-      in.table=t,
-      pop="1000GENOMES:phase_3:EUR",
-      keep.original.table.row.n=FALSE)
-  ))
+             }) %>%
+        dplyr::bind_rows()
+    ))
 
-  # save results
-  if( grepl("Error", u[1])==FALSE ){
-    data.frame(function_tested="ensemblQueryR::ensemblQueryLDwithSNPpairDataframe",
-               n_queries=n,
-               time.sec=u$Elapsed_Time_sec,
-               peak.ram = u$Peak_RAM_Used_MiB,
-               total.ram = u$Total_RAM_Used_MiB) %>%
-      vroom::vroom_write(x=., file=paste0("/home/abrowne/projects/ensemblQueryR/benchmarking/results/ram/", "ensemblQueryLDwithSNPpairDataframe", ".", n, ".csv"))
-  }else{
-    print(u)
+    # save results
+    if( grepl("Error", u[1])==FALSE ){
+      data.frame(function_tested="ensemblQueryR::ensemblQueryLDwithSNPpair",
+                 n_queries=n,
+                 time.sec=u$Elapsed_Time_sec,
+                 peak.ram = u$Peak_RAM_Used_MiB,
+                 total.ram = u$Total_RAM_Used_MiB) %>%
+        vroom::vroom_write(x=., file=paste0("/home/abrowne/projects/ensemblQueryR/benchmarking/results/ram/", "ensemblQueryLDwithSNPpair", ".", n,".",i,".csv"))
+    }else{
+      print(u)
+    }
+
+    # -- 2b. test ensemblQueryR::ensemblQueryLDwithSNPpairDataframe --------------------------------------------
+
+    # clear env
+    rm(t, u)
+
+    t = data.frame(
+      rsid1 = c(rep("rs6792369", n)),
+      rsid2 = c(rep("rs1042779", n))
+    )
+
+    u=try(peakRAM(
+      ensemblQueryLDwithSNPpairDataframe(
+        in.table=t,
+        pop="1000GENOMES:phase_3:EUR",
+        keep.original.table.row.n=FALSE)
+    ))
+
+    # save results
+    if( grepl("Error", u[1])==FALSE ){
+      data.frame(function_tested="ensemblQueryR::ensemblQueryLDwithSNPpairDataframe",
+                 n_queries=n,
+                 time.sec=u$Elapsed_Time_sec,
+                 peak.ram = u$Peak_RAM_Used_MiB,
+                 total.ram = u$Total_RAM_Used_MiB) %>%
+        vroom::vroom_write(x=., file=paste0("/home/abrowne/projects/ensemblQueryR/benchmarking/results/ram/", "ensemblQueryLDwithSNPpairDataframe", ".", n,".",i,".csv"))
+    }else{
+      print(u)
+    }
+
   }
 }
 

@@ -178,26 +178,6 @@ ensemblQueryLDwithSNPpairDataframe = function(in.table, pop="1000GENOMES:phase_3
         tibble::tibble() %>%
         return()
 
-      # # either filter null rows, or keep depending on arg - this can clean up rows where no data was found for the snp pair
-      # if(keep.original.table.row.n==FALSE){
-      #   res.original.len = nrow(res)
-      #
-      #   res = res %>%
-      #     tidyr::drop_na()
-      #
-      #   res.filtered.len = nrow(res)
-      #
-      #   if(res.original.len!=res.filtered.len){
-      #     n.filtered = res.original.len-res.filtered.len
-      #     print(paste0(n.filtered, " rows filtered out due to no data for rsID pairs."))
-      #   }
-      #
-      #   return(res)
-      #
-      # } else{
-      #   return(res)
-      # }
-
     } else{
       print("Error: columns rsid1 and rsid2 do not exist in in.table.")
       stop()
