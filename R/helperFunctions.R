@@ -53,3 +53,34 @@ pingEnsembl = function(){
 
   return(response)
 }
+
+# estimateQueriesPerHour = function(cores, n.queries){
+#
+#   # based on a single-core run of 54000 queries (max ensembl API query rate per hour) to ensemblQueryLDwithSNPpairDataframe,
+#   # the time taken to run 54000 queries was estimated to be 1.937771.
+#   # Based on this, this function takes the cores and number of queries input by the user and will output the predicted queries per hour that your run will likely spawn
+#   # this assumes a linear effect of additional cores
+#   cores=20
+#   n.queries=1000
+#   api.limit.hourly = 54000
+#   time_to_run_54000_in_hours = (116.266269091765/60)
+#   per_hour_query_rate = 54000/time_to_run_54000_in_hours
+#   per_minute_query_rate = per_hour_query_rate/60
+#   per_second_query_rate = per_minute_query_rate/60
+#   time_for_one_query_seconds = (time_to_run_54000_in_hours/54000)*60*60
+#
+#
+#
+#   if(time_for_user_queries < 15){
+#     print(paste(
+#       "Warning: your query of size",n.queries,"using",cores,"cores may exceed the Ensembl REST API hourly query limit. Consider using fewer cores or splitting your query into smaller chunks."
+#     ))
+#   }
+#
+#
+#   predicted_requests_per_hour = n.queries/(time_to_run_54000_in_hours/cores)
+#
+#
+#
+# }
+

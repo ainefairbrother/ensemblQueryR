@@ -21,7 +21,7 @@
 #' ensemblQueryLDwithSNPregion(
 #' chr="6",
 #' start="25837556",
-#' end="25843455",
+#' end="25883455",
 #' pop="1000GENOMES:phase_3:EUR"
 #' )
 #'
@@ -40,10 +40,10 @@ ensemblQueryLDwithSNPregion = function(chr, start, end, pop="1000GENOMES:phase_3
   # require(vroom)
   # require(magrittr)
 
-  chr=6
-  start=25837556
-  end=25843455 #25843455
-  pop="1000GENOMES:phase_3:EUR"
+  # chr=6
+  # start=25837556
+  # end=25843455 #25843455
+  # pop="1000GENOMES:phase_3:EUR"
 
   #------------------------------ check inputs -------------------------------
 
@@ -91,7 +91,8 @@ ensemblQueryLDwithSNPregion = function(chr, start, end, pop="1000GENOMES:phase_3
         `rownames<-`(NULL) %>%
         as.data.frame() %>%
         dplyr::rename(rsid1=variation1, rsid2=variation2) %>%
-        dplyr::relocate(rsid1, rsid2, r2, d_prime, population_name) %>%
+        dplyr::mutate(query_chr=chr, query_start=start, query_end=end) %>%
+        dplyr::relocate(query_chr, query_start, query_end, rsid1, rsid2, r2, d_prime, population_name) %>%
         return()
     } else{
       # if not 0-row (empty) df, then deal with it normally, format and prepare for return
@@ -99,7 +100,8 @@ ensemblQueryLDwithSNPregion = function(chr, start, end, pop="1000GENOMES:phase_3
         data.frame() %>%
         dplyr::arrange(r2) %>%
         dplyr::rename(rsid1=variation1, rsid2=variation2) %>%
-        dplyr::relocate(rsid1, rsid2, r2, d_prime, population_name) %>%
+        dplyr::mutate(query_chr=chr, query_start=start, query_end=end) %>%
+        dplyr::relocate(query_chr, query_start, query_end, rsid1, rsid2, r2, d_prime, population_name) %>%
         return()
     }
     # deal with NA search result (result of 400 error) by testing if res.temp is NA
@@ -114,7 +116,8 @@ ensemblQueryLDwithSNPregion = function(chr, start, end, pop="1000GENOMES:phase_3
         `rownames<-`(NULL) %>%
         as.data.frame() %>%
         dplyr::rename(rsid1=variation1, rsid2=variation2) %>%
-        dplyr::relocate(rsid1, rsid2, r2, d_prime, population_name) %>%
+        dplyr::mutate(query_chr=chr, query_start=start, query_end=end) %>%
+        dplyr::relocate(query_chr, query_start, query_end, rsid1, rsid2, r2, d_prime, population_name) %>%
         return()
     }
   }
@@ -135,7 +138,7 @@ ensemblQueryLDwithSNPregion = function(chr, start, end, pop="1000GENOMES:phase_3
 #' data.frame(
 #'   chr=rep(c("6"), 10),
 #'   start=rep(c("25837556"), 10),
-#'   end=rep(c("25843455"), 10)
+#'   end=rep(c("25943455"), 10)
 #' ) %>%
 #'   ensemblQueryLDwithSNPregionDataframe(
 #'     in.table=.,
@@ -179,15 +182,16 @@ ensemblQueryLDwithSNPregionDataframe = function(in.table, pop="1000GENOMES:phase
                                     start=in.table$start[x],
                                     end=in.table$end[x],
                                     pop=pop) %>%
-          tidyr::unnest(cols = c(rsid1, rsid2, r2, d_prime, population_name)) %>%
-          dplyr::mutate(query_chr = in.table$chr[x],
-                        query_start = in.table$start[x],
-                        query_end = in.table$chr[x]) %>%
-          dplyr::relocate(query_chr, query_start, query_end) %>%
+          tidyr::unnest(cols = c(query_chr, query_start, query_end, rsid1, rsid2, r2, d_prime, population_name)) %>%
+          # dplyr::mutate(query_chr = in.table$chr[x],
+          #               query_start = in.table$start[x],
+          #               query_end = in.table$chr[x]) %>%
+          dplyr::relocate(query_chr, query_start, query_end, rsid1, rsid2, r2, d_prime, population_name) %>%
           as.data.frame()
 
       }) %>%
         do.call("rbind", .) %>%
+        tibble::tibble() %>%
         return(.)
 
     } else{

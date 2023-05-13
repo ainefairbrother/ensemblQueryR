@@ -58,7 +58,8 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
 
   # error handling, if 400 error, set res.temp as NA
   if(r$status_code == 400){
-    print(paste0("Error 400 thrown by httr::GET. One or both of rsid1 (",rsid1,") or rsid2 (", rsid2,")", " may be invalid variant rsID(s). You can check using dbSNP: https://www.ncbi.nlm.nih.gov/snp/."))
+    print(paste0("Error 400 thrown by httr::GET. One or both of rsid1 (",rsid1,") or rsid2 (", rsid2,")",
+                 " may be invalid variant rsID(s). You can check using dbSNP: https://www.ncbi.nlm.nih.gov/snp/."))
     res.temp = NA
   } else{
 
@@ -108,7 +109,6 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
 #' @param in.table data.frame containing SNP pairs. Columns must include `rsid1` for the first member of the pair and `rsid2` for the second member of the pair.
 #' @param pop String. Population for which to compute LD. Use `ensemblQueryGetPops()` to retrieve a list of all populations with LD data. Default is 1000GENOMES:phase_3:EUR.
 #' @param cores Integer. A value between 1 and 10 is accepted, as this prevents the server returning overload-related errors.
-#' @param keep.original.table.row.n Boolean. Set this to TRUE to keep all original rows even if they are NULL in the output (meaning that no data has been found for the rsID pair). Set to FALSE to filter these out and report how many were filtered. Default is FALSE.
 #'
 #' @return A dataframe.
 #' @export
@@ -116,8 +116,7 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
 #' @examples
 #'ensemblQueryLDwithSNPpairDataframe(
 #'  in.table=data.frame(rsid1=rep("rs6792369", 10), rsid2=rep("rs1042779", 10)),
-#'  pop="1000GENOMES:phase_3:EUR",
-#'  keep.original.table.row.n=FALSE)
+#'  pop="1000GENOMES:phase_3:EUR")
 #'
 ensemblQueryLDwithSNPpairDataframe = function(in.table, pop="1000GENOMES:phase_3:EUR", cores=1){ #keep.original.table.row.n=FALSE
 
@@ -173,6 +172,7 @@ ensemblQueryLDwithSNPpairDataframe = function(in.table, pop="1000GENOMES:phase_3
 
       }) %>%
         do.call("rbind", .) %>%
+        tibble::tibble() %>%
         return()
 
       # # either filter null rows, or keep depending on arg - this can clean up rows where no data was found for the snp pair

@@ -191,6 +191,7 @@ ensemblQueryLDwithSNPwindowDataframe = function(in.table, r2=0.8, d.prime=0.8, w
 
       }) %>%
         do.call("rbind", .) %>%
+        tibble::tibble() %>%
         return(.)
 
     } else{
