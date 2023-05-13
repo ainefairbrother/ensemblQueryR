@@ -83,6 +83,7 @@ ensemblQueryLDwithSNPwindow = function(rsid, r2=0.8, d.prime=0.8, window.size=50
         dplyr::rename(query=variation1, snp_in_ld=variation2) %>%
         dplyr::relocate(query, snp_in_ld, r2, d_prime, population_name) %>%
         dplyr::mutate(query=rsid) %>%
+        tibble::tibble() %>%
         return()
     } else{
       # if not 0-row (empty) df, then deal with it normally, format and prepare for return
@@ -91,6 +92,7 @@ ensemblQueryLDwithSNPwindow = function(rsid, r2=0.8, d.prime=0.8, window.size=50
         dplyr::arrange(r2) %>%
         dplyr::rename(query=variation1, snp_in_ld=variation2) %>%
         dplyr::relocate(query, snp_in_ld, r2, d_prime, population_name) %>%
+        tibble::tibble() %>%
         return()
     }
     # deal with NA search result (result of 400 error) by testing if res.temp is NA
@@ -104,6 +106,7 @@ ensemblQueryLDwithSNPwindow = function(rsid, r2=0.8, d.prime=0.8, window.size=50
         dplyr::rename(query=variation1, snp_in_ld=variation2) %>%
         dplyr::relocate(query, snp_in_ld, r2, d_prime, population_name) %>%
         dplyr::mutate(query=rsid) %>%
+        tibble::tibble() %>%
         return()
     }
   }

@@ -93,6 +93,7 @@ ensemblQueryLDwithSNPregion = function(chr, start, end, pop="1000GENOMES:phase_3
         dplyr::rename(rsid1=variation1, rsid2=variation2) %>%
         dplyr::mutate(query_chr=chr, query_start=start, query_end=end) %>%
         dplyr::relocate(query_chr, query_start, query_end, rsid1, rsid2, r2, d_prime, population_name) %>%
+        tibble::tibble() %>%
         return()
     } else{
       # if not 0-row (empty) df, then deal with it normally, format and prepare for return
@@ -102,6 +103,7 @@ ensemblQueryLDwithSNPregion = function(chr, start, end, pop="1000GENOMES:phase_3
         dplyr::rename(rsid1=variation1, rsid2=variation2) %>%
         dplyr::mutate(query_chr=chr, query_start=start, query_end=end) %>%
         dplyr::relocate(query_chr, query_start, query_end, rsid1, rsid2, r2, d_prime, population_name) %>%
+        tibble::tibble() %>%
         return()
     }
     # deal with NA search result (result of 400 error) by testing if res.temp is NA
@@ -118,6 +120,7 @@ ensemblQueryLDwithSNPregion = function(chr, start, end, pop="1000GENOMES:phase_3
         dplyr::rename(rsid1=variation1, rsid2=variation2) %>%
         dplyr::mutate(query_chr=chr, query_start=start, query_end=end) %>%
         dplyr::relocate(query_chr, query_start, query_end, rsid1, rsid2, r2, d_prime, population_name) %>%
+        tibble::tibble() %>%
         return()
     }
   }

@@ -79,6 +79,7 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
         as.data.frame() %>%
         dplyr::rename(query1=variation1, query2=variation2) %>%
         dplyr::relocate(query1, query2, r2, d_prime, population_name) %>%
+        tibble::tibble() %>%
         return()
     } else{
       # if not 0-row (empty) df, then deal with it normally, format and prepare for return
@@ -87,6 +88,7 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
         dplyr::arrange(r2) %>%
         dplyr::rename(query1=variation1, query2=variation2) %>%
         dplyr::relocate(query1, query2, r2, d_prime, population_name) %>%
+        tibble::tibble() %>%
         return()
     }
     # deal with NA search result (result of 400 error) by testing if res.temp is NA
@@ -99,6 +101,7 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
         as.data.frame() %>%
         dplyr::rename(query1=variation1, query2=variation2) %>%
         dplyr::relocate(query1, query2, r2, d_prime, population_name) %>%
+        tibble::tibble() %>%
         return()
     }
   }
