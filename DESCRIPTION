@@ -1,11 +1,10 @@
 Package: ensemblQueryR
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Simple, Fast and Efficient Querying of the Ensembl API
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Author: Aine Fairbrother-Browne
+Maintainer: The package maintainer <ucbtas8@ucl.ac.uk>
+Description: Simple, Fast and Efficient Querying of the Ensembl API
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

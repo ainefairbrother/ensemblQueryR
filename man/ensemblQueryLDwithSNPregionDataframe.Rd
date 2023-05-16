@@ -29,7 +29,7 @@ library(magrittr)
 data.frame(
   chr=rep(c("6"), 10),
   start=rep(c("25837556"), 10),
-  end=rep(c("25843455"), 10)
+  end=rep(c("25943455"), 10)
 ) \%>\%
   ensemblQueryLDwithSNPregionDataframe(
     in.table=.,

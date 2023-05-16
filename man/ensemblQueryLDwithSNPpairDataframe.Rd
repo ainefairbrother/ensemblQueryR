@@ -7,8 +7,7 @@
 ensemblQueryLDwithSNPpairDataframe(
   in.table,
   pop = "1000GENOMES:phase_3:EUR",
-  cores = 1,
-  keep.original.table.row.n = FALSE
+  cores = 1
 )
 }
 \arguments{
@@ -17,8 +16,6 @@ ensemblQueryLDwithSNPpairDataframe(
 \item{pop}{String. Population for which to compute LD. Use `ensemblQueryGetPops()` to retrieve a list of all populations with LD data. Default is 1000GENOMES:phase_3:EUR.}
 
 \item{cores}{Integer. A value between 1 and 10 is accepted, as this prevents the server returning overload-related errors.}
-
-\item{keep.original.table.row.n}{Boolean. Set this to TRUE to keep all original rows even if they are NULL in the output (meaning that no data has been found for the rsID pair). Set to FALSE to filter these out and report how many were filtered. Default is FALSE.}
 }
 \value{
 A dataframe.
@@ -29,7 +26,6 @@ A dataframe.
 \examples{
 ensemblQueryLDwithSNPpairDataframe(
  in.table=data.frame(rsid1=rep("rs6792369", 10), rsid2=rep("rs1042779", 10)),
- pop="1000GENOMES:phase_3:EUR",
- keep.original.table.row.n=FALSE)
+ pop="1000GENOMES:phase_3:EUR")
 
 }
