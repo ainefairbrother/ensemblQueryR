@@ -167,9 +167,9 @@ ensemblQueryLDwithSNPwindowDataframe = function(in.table, r2=0.8, d.prime=0.8, w
     if( ("rsid" %in% colnames(in.table)) ){
 
       message(paste("Running ensemblQueryLDwithSNPwindowDataframe to retrieve LD metrics for" , nrow(in.table), "central variants, where: \n",
-                    paste0("The window around each central variant is ", window.size),
-                    paste0("r-squared = ",r2),
-                    paste0("D' = ", d.prime)
+                    paste0("The window around each central variant is ", window.size, ","),
+                    paste0("r-squared = ",r2, ","),
+                    paste0("D' = ", d.prime, ".")
       ))
 
       # check system

@@ -7,7 +7,6 @@
 .Rproj
 ./benchmarking/results/*
 ./benchmarking/results/ram/*
-./benchmarking/results/speed/*
 ./img/*
 .Rbuildignore
 ensemblQueryR.Rproj

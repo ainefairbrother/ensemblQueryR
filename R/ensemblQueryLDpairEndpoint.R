@@ -39,6 +39,11 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
   # require(vroom)
   # require(magrittr)
 
+
+  rsid1="rs6792369"
+  rsid2="rs1042779"
+  pop="1000GENOMES:phase_3:EUR"
+
   #------------------------------ check inputs -------------------------------
 
   stopifnot(is.character(rsid1))
@@ -88,6 +93,7 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
         dplyr::arrange(r2) %>%
         dplyr::rename(query1=variation1, query2=variation2) %>%
         dplyr::relocate(query1, query2, r2, d_prime, population_name) %>%
+        tidyr::unnest(cols=c(query1, query2, r2, d_prime, population_name)) %>%
         tibble::tibble() %>%
         return()
     }
@@ -101,6 +107,7 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
         as.data.frame() %>%
         dplyr::rename(query1=variation1, query2=variation2) %>%
         dplyr::relocate(query1, query2, r2, d_prime, population_name) %>%
+        tidyr::unnest(cols=c(query1, query2, r2, d_prime, population_name)) %>%
         tibble::tibble() %>%
         return()
     }
@@ -194,7 +201,6 @@ ensemblQueryLDwithSNPpairDataframe = function(in.table, pop="1000GENOMES:phase_3
             do.call("rbind", .) %>%
             tibble::tibble() %>%
             return()
-
         }
       }
 
