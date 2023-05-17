@@ -23,7 +23,7 @@
 #' ensemblQueryLDwithSNPwindow(rsid="rs3851179", r2=0.8, d.prime=0.8,
 #'                             window.size=500, pop="1000GENOMES:phase_3:EUR")
 #'
-ensemblQueryLDwithSNPwindow = function(rsid, r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR"){
+ensemblQueryLDwithSNPwindow = function(rsid, pop="1000GENOMES:phase_3:EUR", r2=NA, d.prime=NA, window.size=NA){
 
   # TEST
   # load libs
@@ -56,7 +56,7 @@ ensemblQueryLDwithSNPwindow = function(rsid, r2=0.8, d.prime=0.8, window.size=50
 
   if(is.na(r2)){r2=""}else{r2=paste0(";r2=",r2)}
   if(is.na(d.prime)){d.prime=""}else{d.prime=paste0(";r2=",d.prime)}
-  if(is.na(window.size)){window.size=""}else{window.size=paste0(";r2=",window.size)}
+  if(is.na(window.size)){window.size=""}else{window.size=paste0("r2=",window.size)}
 
   server <- "https://rest.ensembl.org"
   ext <- paste0("/ld/human/",rsid,"/",pop,"?",window.size,r2,d.prime)
@@ -145,7 +145,7 @@ ensemblQueryLDwithSNPwindow = function(rsid, r2=0.8, d.prime=0.8, window.size=50
 #'                                      pop="1000GENOMES:phase_3:EUR",
 #'                                      cores=2)
 #'
-ensemblQueryLDwithSNPwindowDataframe = function(in.table, r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR", cores=1){
+ensemblQueryLDwithSNPwindowDataframe = function(in.table, pop="1000GENOMES:phase_3:EUR", r2=NA, d.prime=NA, window.size=NA, cores=1){
 
   #------------------------------ test -------------------------------
   # library(purrr)
