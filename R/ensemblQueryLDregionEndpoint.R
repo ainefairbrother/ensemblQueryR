@@ -21,7 +21,7 @@
 #' ensemblQueryLDwithSNPregion(
 #' chr="6",
 #' start="25837556",
-#' end="25883455",
+#' end="25843455",
 #' pop="1000GENOMES:phase_3:EUR"
 #' )
 #'
@@ -39,7 +39,7 @@ ensemblQueryLDwithSNPregion = function(chr, start, end, pop="1000GENOMES:phase_3
   # require(purrr)
   # require(vroom)
   # require(magrittr)
-
+  #
   # chr=6
   # start=25837556
   # end=25843455 #25843455
@@ -75,7 +75,7 @@ ensemblQueryLDwithSNPregion = function(chr, start, end, pop="1000GENOMES:phase_3
     res.temp = NA
   } else{
     # if no error, use this if you get a simple nested list back, otherwise inspect its structure
-    res.temp = jsonlite::fromJSON(jsonlite::toJSON(content(r))) %>%
+    res.temp = jsonlite::fromJSON(jsonlite::toJSON(httr::content(r))) %>%
       data.frame()
   }
 

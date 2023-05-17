@@ -38,24 +38,28 @@ ensemblQueryLDwithSNPwindow = function(rsid, r2=0.8, d.prime=0.8, window.size=50
   # require(vroom)
   # require(magrittr)
   #
-  # rsid="rs1210721423"
-  # r2=0.8
-  # d.prime=0.8
-  # window.size=500
+  # rsid="rs1042779"
+  # r2=NA
+  # d.prime=NA
+  # window.size=NA
   # pop="1000GENOMES:phase_3:EUR"
 
   #------------------------------ check inputs -------------------------------
 
   stopifnot(is.character(rsid))
-  stopifnot(is.character(r2) | is.numeric(r2))
-  stopifnot(is.character(d.prime) | is.numeric(d.prime))
-  stopifnot(is.character(window.size) | is.numeric(window.size))
+  stopifnot(is.numeric(r2) | is.character(r2) | is.na(r2))
+  stopifnot(is.numeric(d.prime) | is.character(d.prime) | is.na(d.prime))
+  stopifnot(is.character(window.size) | is.numeric(window.size) | is.na(window.size))
   stopifnot(is.character(pop))
 
   #--------------------------------- run query -------------------------------
 
+  if(is.na(r2)){r2=""}else{r2=paste0(";r2=",r2)}
+  if(is.na(d.prime)){d.prime=""}else{d.prime=paste0(";r2=",d.prime)}
+  if(is.na(window.size)){window.size=""}else{window.size=paste0(";r2=",window.size)}
+
   server <- "https://rest.ensembl.org"
-  ext <- paste0("/ld/human/",rsid,"/",pop,"?d_prime=",d.prime,";window_size=",window.size,";r2=",r2)
+  ext <- paste0("/ld/human/",rsid,"/",pop,"?",window.size,r2,d.prime)
 
   r <- httr::GET(url=paste(server, ext, sep = ""), httr::content_type("application/json"))
 
@@ -158,8 +162,8 @@ ensemblQueryLDwithSNPwindowDataframe = function(in.table, r2=0.8, d.prime=0.8, w
   #------------------------------ check inputs -------------------------------
 
   stopifnot(is.data.frame(in.table))
-  stopifnot(is.numeric(r2) | is.character(r2))
-  stopifnot(is.numeric(d.prime) | is.character(d.prime))
+  stopifnot(is.numeric(r2) | is.character(r2) | is.na(r2))
+  stopifnot(is.numeric(d.prime) | is.character(d.prime) | is.na(d.prime))
   stopifnot(is.numeric(window.size) | is.character(window.size))
   stopifnot(is.character(pop))
   stopifnot(is.numeric(cores))

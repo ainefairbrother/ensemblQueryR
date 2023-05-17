@@ -38,7 +38,7 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
   # require(purrr)
   # require(vroom)
   # require(magrittr)
-
+  #
   # rsid1="rs6792369"
   # rsid2="rs1042779"
   # pop="1000GENOMES:phase_3:EUR"
