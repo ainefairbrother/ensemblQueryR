@@ -203,6 +203,7 @@ ensemblQueryLDwithSNPwindowDataframe = function(in.table, pop="1000GENOMES:phase
         }) %>%
           do.call("rbind", .) %>%
           tibble::tibble() %>%
+          tidyr::unnest(cols = c(query, snp_in_ld, r2, d_prime, population_name)) %>%
           return(.)
 
       }else{
@@ -220,6 +221,7 @@ ensemblQueryLDwithSNPwindowDataframe = function(in.table, pop="1000GENOMES:phase
 
         }) %>%
           do.call("rbind", .) %>%
+          tidyr::unnest(cols = c(query, snp_in_ld, r2, d_prime, population_name)) %>%
           tibble::tibble() %>%
           return(.)
 
