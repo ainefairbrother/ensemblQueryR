@@ -1,8 +1,8 @@
-# load libs
-devtools::load_all("/home/abrowne/projects/ensemblQueryR/")
-library(LDlinkR)
-library(magrittr)
-library(peakRAM)
+# # load libs
+# devtools::load_all("/home/abrowne/projects/ensemblQueryR/")
+# library(LDlinkR)
+# library(magrittr)
+# library(peakRAM)
 
 # -- 1. Run benchmarking for 100,1000,10000 queries --------------------------------------------
 

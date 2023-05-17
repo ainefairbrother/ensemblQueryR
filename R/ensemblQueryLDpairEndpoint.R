@@ -9,7 +9,7 @@
 #'
 #' @import httr
 #' @import xml2
-#' @import jsonlite
+#' @importFrom jsonlite fromJSON toJSON
 #' @import dplyr
 #' @import tidyr
 #' @import vroom
@@ -55,7 +55,7 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
   server <- "https://rest.ensembl.org"
   ext <- paste0("/ld/human/pairwise/",rsid1,"/",rsid2,"?population_name=",pop)
 
-  r <- httr::GET(url=paste(server, ext, sep = ""), content_type("application/json"))
+  r <- httr::GET(url=paste(server, ext, sep = ""), httr::content_type("application/json"))
 
   # stop_for_status(r)
 
@@ -125,8 +125,10 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
 #'
 #' @examples
 #'ensemblQueryLDwithSNPpairDataframe(
-#'  in.table=data.frame(rsid1=rep("rs6792369", 10), rsid2=rep("rs1042779", 10)),
-#'  pop="1000GENOMES:phase_3:EUR")
+#'  in.table=data.frame(rsid1=rep("rs6792369", 10),
+#'                      rsid2=rep("rs1042779", 10)),
+#'                      pop="1000GENOMES:phase_3:EUR"
+#')
 #'
 ensemblQueryLDwithSNPpairDataframe = function(in.table, pop="1000GENOMES:phase_3:EUR", cores=1){ #keep.original.table.row.n=FALSE
 

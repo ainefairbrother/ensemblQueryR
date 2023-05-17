@@ -9,7 +9,7 @@
 #'
 #' @import httr
 #' @import xml2
-#' @import jsonlite
+#' @importFrom jsonlite fromJSON toJSON
 #' @import dplyr
 #' @import tidyr
 #' @import vroom
@@ -57,7 +57,7 @@ ensemblQueryLDwithSNPregion = function(chr, start, end, pop="1000GENOMES:phase_3
   server <- "https://rest.ensembl.org"
   ext <- paste0("/ld/human/region/",chr,":",start,"..",end,"/",pop,"?")
 
-  r <- httr::GET(url=paste(server, ext, sep = ""), content_type("application/json"))
+  r <- httr::GET(url=paste(server, ext, sep = ""), httr::content_type("application/json"))
 
   # stop_for_status(r)
 

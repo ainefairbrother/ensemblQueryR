@@ -25,7 +25,9 @@ A dataframe.
 }
 \examples{
 ensemblQueryLDwithSNPpairDataframe(
- in.table=data.frame(rsid1=rep("rs6792369", 10), rsid2=rep("rs1042779", 10)),
- pop="1000GENOMES:phase_3:EUR")
+ in.table=data.frame(rsid1=rep("rs6792369", 10),
+                     rsid2=rep("rs1042779", 10)),
+                     pop="1000GENOMES:phase_3:EUR"
+)
 
 }

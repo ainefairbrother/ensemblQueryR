@@ -33,7 +33,9 @@ A dataframe.
 `ensemblQueryLDwithSNPwindowDataframe` applies `ensemblQueryLDwithSNPwindow` to a data.frame of rsIDs.
 }
 \examples{
-in.table = data.frame(rsid = rep(c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870"), 10))
+in.table = data.frame(rsid = rep(c("rs7153434","rs1963154","rs12672022",
+                                   "rs3852802","rs12324408","rs56346870"), 10))
+
 ensemblQueryLDwithSNPwindowDataframe(in.table=in.table,
                                      r2=0.8,
                                      d.prime=0.8,

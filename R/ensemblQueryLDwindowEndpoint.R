@@ -11,7 +11,7 @@
 #'
 #' @import httr
 #' @import xml2
-#' @import jsonlite
+#' @importFrom jsonlite fromJSON toJSON
 #' @import dplyr
 #' @import tidyr
 #' @import vroom
@@ -20,7 +20,8 @@
 #' @export
 #'
 #' @examples
-#' ensemblQueryLDwithSNPwindow(rsid="rs3851179", r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR")
+#' ensemblQueryLDwithSNPwindow(rsid="rs3851179", r2=0.8, d.prime=0.8,
+#'                             window.size=500, pop="1000GENOMES:phase_3:EUR")
 #'
 ensemblQueryLDwithSNPwindow = function(rsid, r2=0.8, d.prime=0.8, window.size=500, pop="1000GENOMES:phase_3:EUR"){
 
@@ -56,7 +57,7 @@ ensemblQueryLDwithSNPwindow = function(rsid, r2=0.8, d.prime=0.8, window.size=50
   server <- "https://rest.ensembl.org"
   ext <- paste0("/ld/human/",rsid,"/",pop,"?d_prime=",d.prime,";window_size=",window.size,";r2=",r2)
 
-  r <- httr::GET(url=paste(server, ext, sep = ""), content_type("application/json"))
+  r <- httr::GET(url=paste(server, ext, sep = ""), httr::content_type("application/json"))
 
   #-------------------- check output and write out ---------------------------
 
@@ -130,7 +131,9 @@ ensemblQueryLDwithSNPwindow = function(rsid, r2=0.8, d.prime=0.8, window.size=50
 #' @export
 #'
 #' @examples
-#' in.table = data.frame(rsid = rep(c("rs7153434","rs1963154","rs12672022","rs3852802","rs12324408","rs56346870"), 10))
+#' in.table = data.frame(rsid = rep(c("rs7153434","rs1963154","rs12672022",
+#'                                    "rs3852802","rs12324408","rs56346870"), 10))
+#'
 #' ensemblQueryLDwithSNPwindowDataframe(in.table=in.table,
 #'                                      r2=0.8,
 #'                                      d.prime=0.8,

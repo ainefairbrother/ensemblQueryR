@@ -4,7 +4,7 @@ Title: Simple, Fast and Efficient Querying of the Ensembl API
 Version: 0.1.0
 Author: Aine Fairbrother-Browne
 Maintainer: The package maintainer <ucbtas8@ucl.ac.uk>
-Description: Simple, Fast and Efficient Querying of the Ensembl API
+Description: Simple, Fast and Efficient Querying of the Ensembl API.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -14,7 +14,9 @@ Imports:
     httr,
     jsonlite,
     magrittr,
+    parallel,
     purrr,
+    tibble,
     tidyr,
     vroom,
     xml2
