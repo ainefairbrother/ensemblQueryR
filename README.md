@@ -24,8 +24,6 @@ remotes::install_github("ainefairbrother/ensemblQueryR")
 install.packages("ensemblQueryR")
 ```
 
-Or from
-
 ## Setup 
 
 To check that the Ensembl server is up and running, the server can be pinged. 

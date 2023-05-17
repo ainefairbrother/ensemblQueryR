@@ -7,7 +7,7 @@ library(peakRAM)
 # -- 1. Run benchmarking for 100,1000,10000 queries --------------------------------------------
 
 for(i in c(1:10)){
-  for(n in c(10000)){
+  for(n in c(100,1000,10000)){
 
     print(paste(
       "Processing", i, n
@@ -90,10 +90,17 @@ for(i in c(1:10)){
                  n_queries=n,
                  time.sec=u$Elapsed_Time_sec,
                  peak.ram = u$Peak_RAM_Used_MiB,
-                 total.ram = u$Total_RAM_Used_MiB) %>%
+                 total.ram = u$Total_RAM_Used_MiB,
+                 error = "none") %>%
         vroom::vroom_write(x=., file=paste0("/home/abrowne/projects/ensemblQueryR/benchmarking/results/ram/", "ensemblQueryLDwithSNPpair", ".", n,".",i,".csv"))
     }else{
-      print(u)
+      data.frame(function_tested="ensemblQueryR::ensemblQueryLDwithSNPpair",
+                 n_queries=n,
+                 time.sec=NA_integer_,
+                 peak.ram =NA_integer_,
+                 total.ram =NA_integer_,
+                 error = u[1]) %>%
+        vroom::vroom_write(x=., file=paste0("/home/abrowne/projects/ensemblQueryR/benchmarking/results/ram/", "ensemblQueryLDwithSNPpair", ".", n,".",i,".csv"))
     }
 
   }
@@ -221,7 +228,23 @@ speed.line = list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/resul
     dpi = 300
   )
 
-# -- 5. Calculate performance stats --------------------------------------------
+# -- 5. Check how many 10K LDpair runs failed --------------------------------------------
+
+list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/results/ram",
+           pattern="0.\\d.csv",
+           full.names=T) %>%
+  # .[!(grepl("LDpair.10000", .))] %>%
+  lapply(X=., FUN=function(x){
+    vroom::vroom(x, show_col_types = FALSE) %>%
+      dplyr::mutate(iter = stringr::str_match_all(string=x, pattern="\\w+.\\d+.(\\d).csv")[[1]][2])
+  }) %>%
+  dplyr::bind_rows() %>%
+  dplyr::filter(n_queries==10000) %>%
+  dplyr::filter(function_tested=="LDlinkR::LDpair") %>%
+  dplyr::group_by(error) %>%
+  dplyr::summarise(n=n())
+
+# -- 6. Calculate performance stats --------------------------------------------
 
 performance = list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/results/ram",
                         pattern="0.\\d.csv",
