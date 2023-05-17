@@ -65,7 +65,7 @@ ensemblQueryLDwithSNPregion = function(chr, start, end, pop="1000GENOMES:phase_3
 
   # error handling, if 400 error, set res.temp as NA
   if(r$status_code == 400){
-    print(paste(
+    message(paste(
       "Error 400 thrown by httr::GET. Please check your input data for validity.",
       "CHR=",chr,"START=",start,"END=",end, "",
       chr, "may be an invalid chromosome identifier - this should be 1,2,3 ... 22, X or Y.",
@@ -84,7 +84,7 @@ ensemblQueryLDwithSNPregion = function(chr, start, end, pop="1000GENOMES:phase_3
   if(is.data.frame(res.temp)){
     if(nrow(res.temp)==0){
 
-      print(paste0("No LD data found for the genomic coordinates input: ", chr,":",start,"-",end))
+      message(paste0("No LD data found for the genomic coordinates input: ", chr,":",start,"-",end))
 
       data.frame(rep(NA, 5), row.names = c("variation1", "variation2", "d_prime", "population_name", "r2")) %>%
         t() %>%
@@ -111,7 +111,7 @@ ensemblQueryLDwithSNPregion = function(chr, start, end, pop="1000GENOMES:phase_3
   } else{
     if(is.na(res.temp)){
 
-      print(paste0("No LD data found for the genomic coordinates input: ", chr,":",start,"-",end))
+      message(paste0("No LD data found for the genomic coordinates input: ", chr,":",start,"-",end))
 
       data.frame(rep(NA, 5), row.names = c("variation1", "variation2", "d_prime", "population_name", "r2")) %>%
         t() %>%
@@ -162,44 +162,63 @@ ensemblQueryLDwithSNPregionDataframe = function(in.table, pop="1000GENOMES:phase
   stopifnot(is.character(pop))
   stopifnot(is.numeric(cores))
 
-  # check that the cores arg is set above 0 but not above the max. available
-  # cores.available = parallel::detectCores()
-  stopifnot("Cores must be a value between 0 and 10"= (cores>0) & (cores<=10))
-
   #--------------------------------- main ------------------------------------
 
   if( is.data.frame(in.table)==TRUE ){
     if( (("chr" %in% colnames(in.table)) & ("start" %in% colnames(in.table)) & ("end" %in% colnames(in.table))) ){
 
-      print(paste("Running ensemblQueryLDwithSNPregionDataframe to retrieve LD metrics for variant pairs in", nrow(in.table), "genomic regions"))
+      message(paste("Running ensemblQueryLDwithSNPregionDataframe to retrieve LD metrics for variant pairs in", nrow(in.table), "genomic regions"))
 
-      if(cores>1){
-        print(paste(
-          "Parallelising query using", cores, "cores."
-        ))
+      # check system
+      sys = Sys.info()['sysname'] %>% grepl("Windows",.)
+
+      if(sys==FALSE){
+
+        if(cores>1){
+          message(paste(
+            "Parallelising query using", cores, "cores."
+          ))
+        }
+
+        parallel::mclapply(X=c(1:nrow(in.table)), mc.cores=cores, FUN=function(x){
+
+          ensemblQueryLDwithSNPregion(chr=in.table$chr[x],
+                                      start=in.table$start[x],
+                                      end=in.table$end[x],
+                                      pop=pop) %>%
+            tidyr::unnest(cols = c(query_chr, query_start, query_end, rsid1, rsid2, r2, d_prime, population_name)) %>%
+            dplyr::relocate(query_chr, query_start, query_end, rsid1, rsid2, r2, d_prime, population_name) %>%
+            as.data.frame()
+
+        }) %>%
+          do.call("rbind", .) %>%
+          tibble::tibble() %>%
+          return(.)
+      } else{
+        lapply(X=c(1:nrow(in.table)), FUN=function(x){
+
+          message("Windows OS detected. Cannot run parallel queries using parallel::mclapply. Using lapply instead.")
+
+          ensemblQueryLDwithSNPregion(chr=in.table$chr[x],
+                                      start=in.table$start[x],
+                                      end=in.table$end[x],
+                                      pop=pop) %>%
+            tidyr::unnest(cols = c(query_chr, query_start, query_end, rsid1, rsid2, r2, d_prime, population_name)) %>%
+            dplyr::relocate(query_chr, query_start, query_end, rsid1, rsid2, r2, d_prime, population_name) %>%
+            as.data.frame()
+
+        }) %>%
+          do.call("rbind", .) %>%
+          tibble::tibble() %>%
+          return(.)
       }
 
-      parallel::mclapply(X=c(1:nrow(in.table)), mc.cores=cores, FUN=function(x){
-
-        ensemblQueryLDwithSNPregion(chr=in.table$chr[x],
-                                    start=in.table$start[x],
-                                    end=in.table$end[x],
-                                    pop=pop) %>%
-          tidyr::unnest(cols = c(query_chr, query_start, query_end, rsid1, rsid2, r2, d_prime, population_name)) %>%
-          dplyr::relocate(query_chr, query_start, query_end, rsid1, rsid2, r2, d_prime, population_name) %>%
-          as.data.frame()
-
-      }) %>%
-        do.call("rbind", .) %>%
-        tibble::tibble() %>%
-        return(.)
-
     } else{
-      print("Error: one or more of 'chr', 'start' or 'end' column(s) does not exist in in.table.")
+      message("Error: one or more of 'chr', 'start' or 'end' column(s) does not exist in in.table.")
       stop()
     }
   } else{
-    print("Error: in.table is not a data.frame.")
+    message("Error: in.table is not a data.frame.")
     stop()
   }
 }

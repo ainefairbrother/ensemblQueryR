@@ -64,7 +64,7 @@ ensemblQueryLDwithSNPwindow = function(rsid, r2=0.8, d.prime=0.8, window.size=50
 
   # error handling, if 400 error, set res.temp as NA
   if(r$status_code == 400){
-    print("Error 400 thrown by httr::GET. This may not be a valid SNP rsID, check using dbSNP: https://www.ncbi.nlm.nih.gov/snp/.")
+    message("Error 400 thrown by httr::GET. This may not be a valid SNP rsID, check using dbSNP: https://www.ncbi.nlm.nih.gov/snp/.")
     res.temp = NA
   } else{
     # if no error, use this if you get a simple nested list back, otherwise inspect its structure
@@ -161,48 +161,69 @@ ensemblQueryLDwithSNPwindowDataframe = function(in.table, r2=0.8, d.prime=0.8, w
   stopifnot(is.character(pop))
   stopifnot(is.numeric(cores))
 
-  # check that the cores arg is set above 0 but not above the max. available
-  # cores.available = parallel::detectCores()
-  stopifnot("Cores must be a value between 0 and 10"= (cores>0) & (cores<=10))
-
   #--------------------------------- main ------------------------------------
 
   if( is.data.frame(in.table)==TRUE ){
     if( ("rsid" %in% colnames(in.table)) ){
 
-      print(paste("Running ensemblQueryLDwithSNPwindowDataframe to retrieve LD metrics for" , nrow(in.table), "central variants, where: \n",
-                  paste0("The window around each central variant is ", window.size),
-                  paste0("r-squared = ",r2),
-                  paste0("D' = ", d.prime)
+      message(paste("Running ensemblQueryLDwithSNPwindowDataframe to retrieve LD metrics for" , nrow(in.table), "central variants, where: \n",
+                    paste0("The window around each central variant is ", window.size),
+                    paste0("r-squared = ",r2),
+                    paste0("D' = ", d.prime)
       ))
 
-      # else if cores set to more than 1, parallelise
-      if(cores>1){
-        print(paste(
-          "Parallelising query using", cores, "cores."
-        ))
+      # check system
+      sys = Sys.info()['sysname'] %>% grepl("Windows",.)
+
+      if(sys==FALSE){
+
+        # else if cores set to more than 1, parallelise
+        if(cores>1){
+          message(paste(
+            "Parallelising query using", cores, "cores."
+          ))
+        }
+
+        parallel::mclapply(X=c(1:nrow(in.table)), mc.cores=cores, FUN=function(x){
+          ensemblQueryLDwithSNPwindow(rsid=in.table$rsid[x],
+                                      r2=r2,
+                                      d.prime=d.prime,
+                                      window.size=window.size,
+                                      pop=pop) %>%
+            tidyr::unnest(cols = c(query, snp_in_ld, r2, d_prime, population_name)) %>%
+            as.data.frame()
+
+        }) %>%
+          do.call("rbind", .) %>%
+          tibble::tibble() %>%
+          return(.)
+
+      }else{
+
+        message("Windows OS detected. Cannot run parallel queries using parallel::mclapply. Using lapply instead.")
+
+        lapply(X=c(1:nrow(in.table)), FUN=function(x){
+          ensemblQueryLDwithSNPwindow(rsid=in.table$rsid[x],
+                                      r2=r2,
+                                      d.prime=d.prime,
+                                      window.size=window.size,
+                                      pop=pop) %>%
+            tidyr::unnest(cols = c(query, snp_in_ld, r2, d_prime, population_name)) %>%
+            as.data.frame()
+
+        }) %>%
+          do.call("rbind", .) %>%
+          tibble::tibble() %>%
+          return(.)
+
       }
 
-      parallel::mclapply(X=c(1:nrow(in.table)), mc.cores=cores, FUN=function(x){
-        ensemblQueryLDwithSNPwindow(rsid=in.table$rsid[x],
-                                    r2=r2,
-                                    d.prime=d.prime,
-                                    window.size=window.size,
-                                    pop=pop) %>%
-          tidyr::unnest(cols = c(query, snp_in_ld, r2, d_prime, population_name)) %>%
-          as.data.frame()
-
-      }) %>%
-        do.call("rbind", .) %>%
-        tibble::tibble() %>%
-        return(.)
-
     } else{
-      print("Error: column rsid does not exist in in.table.")
+      message("Error: column rsid does not exist in in.table.")
       stop()
     }
   } else{
-    print("Error: in.table is not a data.frame.")
+    message("Error: in.table is not a data.frame.")
     stop()
   }
 }

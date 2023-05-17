@@ -58,8 +58,8 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
 
   # error handling, if 400 error, set res.temp as NA
   if(r$status_code == 400){
-    print(paste0("Error 400 thrown by httr::GET. One or both of rsid1 (",rsid1,") or rsid2 (", rsid2,")",
-                 " may be invalid variant rsID(s). You can check using dbSNP: https://www.ncbi.nlm.nih.gov/snp/."))
+    message(paste0("Error 400 thrown by httr::GET. One or both of rsid1 (",rsid1,") or rsid2 (", rsid2,")",
+                   " may be invalid variant rsID(s). You can check using dbSNP: https://www.ncbi.nlm.nih.gov/snp/."))
     res.temp = NA
   } else{
 
@@ -72,7 +72,7 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
   # then returning an empty df if no result
   if(is.data.frame(res.temp)){
     if(nrow(res.temp)==0){
-      print(paste0("No data found for variants ", rsid1, " and ", rsid2))
+      message(paste0("No data found for variants ", rsid1, " and ", rsid2))
       data.frame(rep(NA, 5), row.names = c("variation1", "variation2", "d_prime", "population_name", "r2")) %>%
         t() %>%
         `rownames<-`(NULL) %>%
@@ -140,50 +140,70 @@ ensemblQueryLDwithSNPpairDataframe = function(in.table, pop="1000GENOMES:phase_3
   # pop="1000GENOMES:phase_3:EUR"
   # keep.original.table.row.n=FALSE
   # cores=2
-
   #------------------------------ check inputs -------------------------------
 
   stopifnot(is.data.frame(in.table))
   stopifnot(is.character(pop))
-  # stopifnot(is.logical(keep.original.table.row.n))
   stopifnot(is.numeric(cores))
-
-  # check that the cores arg is set above 0 but not above the max. available
-  # cores.available = parallel::detectCores()
-  # stopifnot("Cores must be a value between 0 and 10"= (cores>0) & (cores<=10))
 
   #--------------------------------- main ------------------------------------
 
   if( is.data.frame(in.table)==TRUE ){
     if( (("rsid1" %in% colnames(in.table)) & ("rsid2" %in% colnames(in.table))) ){
 
-      print(paste("Running ensemblQueryLDwithSNPpairDataframe to retrieve LD metrics for", nrow(in.table), "variant pairs..."))
+      message(paste("Running ensemblQueryLDwithSNPpairDataframe to retrieve LD metrics for", nrow(in.table), "variant pairs..."))
 
-      if(cores>1){
-        print(paste(
-          "Parallelising query using", cores, "cores"
-        ))
+      # check system
+      sys = Sys.info()['sysname'] %>% grepl("Windows",.)
+
+      if(sys==FALSE){
+
+        if(cores>1){
+          message(paste(
+            "Parallelising query using", cores, "cores"
+          ))
+        }
+
+        res = parallel::mclapply(X=c(1:nrow(in.table)), mc.cores=cores, FUN=function(x){
+
+          ensemblQueryLDwithSNPpair(rsid1=in.table$rsid1[x],
+                                    rsid2=in.table$rsid2[x],
+                                    pop=pop) %>%
+            tidyr::unnest(cols = c(query1, query2, r2, d_prime, population_name)) %>%
+            as.data.frame()
+
+        }) %>%
+          do.call("rbind", .) %>%
+          tibble::tibble() %>%
+          return()
+
+      } else{
+        if(sys==TRUE){
+
+          message("Windows OS detected. Cannot run parallel queries using parallel::mclapply. Using lapply instead.")
+
+          res = lapply(X=c(1:nrow(in.table)), FUN=function(x){
+
+            ensemblQueryLDwithSNPpair(rsid1=in.table$rsid1[x],
+                                      rsid2=in.table$rsid2[x],
+                                      pop=pop) %>%
+              tidyr::unnest(cols = c(query1, query2, r2, d_prime, population_name)) %>%
+              as.data.frame()
+
+          }) %>%
+            do.call("rbind", .) %>%
+            tibble::tibble() %>%
+            return()
+
+        }
       }
 
-      res = parallel::mclapply(X=c(1:nrow(in.table)), mc.cores=cores, FUN=function(x){
-
-        ensemblQueryLDwithSNPpair(rsid1=in.table$rsid1[x],
-                                  rsid2=in.table$rsid2[x],
-                                  pop=pop) %>%
-          tidyr::unnest(cols = c(query1, query2, r2, d_prime, population_name)) %>%
-          as.data.frame()
-
-      }) %>%
-        do.call("rbind", .) %>%
-        tibble::tibble() %>%
-        return()
-
     } else{
-      print("Error: columns rsid1 and rsid2 do not exist in in.table.")
+      message("Error: columns rsid1 and rsid2 do not exist in in.table.")
       stop()
     }
   } else{
-    print("Error: in.table is not a data.frame.")
+    message("Error: in.table is not a data.frame.")
     stop()
   }
 }
