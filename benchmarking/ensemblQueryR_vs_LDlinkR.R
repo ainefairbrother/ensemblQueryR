@@ -125,7 +125,7 @@ theme_rhr <- theme_set(
 )
 
 ram.line = list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/results/ram",
-                      pattern="0.\\d.csv",
+                      pattern="0.\\d+.csv",
                       full.names=T) %>%
   lapply(X=., FUN=function(x){
     vroom::vroom(x) %>%
@@ -144,8 +144,8 @@ ram.line = list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/results
                 queries_numeric = readr::parse_number(as.character(n_queries))) %>%
   dplyr::mutate(time.mins = time.sec/60) %>%
   dplyr::group_by(package, function_tested, n_queries, queries_numeric) %>%
-  dplyr::summarise(sd.peak.ram = sd(peak.ram),
-                   sd.time.mins = sd(time.mins),
+  dplyr::summarise(sd.peak.ram = sd(peak.ram, na.rm=T),
+                   sd.time.mins = sd(time.mins, na.rm=T),
                    mean.peak.ram = mean(peak.ram, na.rm=T),
                    mean.time.mins = mean(time.mins, na.rm=T)) %>%
   dplyr::ungroup() %>%
@@ -167,7 +167,7 @@ ram.line = list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/results
 # -- 3. Plot speed --------------------------------------------
 
 speed.line = list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/results/ram",
-                        pattern="0.\\d.csv",
+                        pattern="0.\\d+.csv",
                         full.names=T) %>%
   # .[!(grepl("LDpair.10000", .))] %>%
   lapply(X=., FUN=function(x){
@@ -187,8 +187,8 @@ speed.line = list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/resul
                 queries_numeric = readr::parse_number(as.character(n_queries))) %>%
   dplyr::mutate(time.mins = time.sec/60) %>%
   dplyr::group_by(package, function_tested, n_queries, queries_numeric) %>%
-  dplyr::summarise(sd.peak.ram = sd(peak.ram),
-                sd.time.mins = sd(time.mins),
+  dplyr::summarise(sd.peak.ram = sd(peak.ram, na.rm=T),
+                sd.time.mins = sd(time.mins, na.rm=T),
                 mean.peak.ram = mean(peak.ram, na.rm=T),
                 mean.time.mins = mean(time.mins, na.rm=T)) %>%
   dplyr::ungroup() %>%
@@ -213,7 +213,7 @@ speed.line = list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/resul
 
 (
   (
-    (ram.line | speed.line) + plot_layout(guides = "collect") & theme(legend.position="bottom")
+    (ram.line | speed.line) + plot_layout(guides = "collect") & theme(legend.position="right")
   ) & plot_annotation(tag_levels = "a")
 ) %>%
   ggsave(
@@ -223,7 +223,7 @@ speed.line = list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/resul
     device = "png",
     scale = 1,
     width = 7,
-    height = 4,
+    height = 3.5,
     units = c("in"),
     dpi = 300
   )
@@ -231,7 +231,7 @@ speed.line = list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/resul
 # -- 5. Check how many 10K LDpair runs failed --------------------------------------------
 
 list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/results/ram",
-           pattern="0.\\d.csv",
+           pattern="0.\\d+.csv",
            full.names=T) %>%
   # .[!(grepl("LDpair.10000", .))] %>%
   lapply(X=., FUN=function(x){
@@ -247,7 +247,7 @@ list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/results/ram",
 # -- 6. Calculate performance stats --------------------------------------------
 
 performance = list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/results/ram",
-                        pattern="0.\\d.csv",
+                        pattern="0.\\d+.csv",
                         full.names=T) %>%
   # .[!(grepl("LDpair.10000", .))] %>%
   lapply(X=., FUN=function(x){

@@ -6,22 +6,22 @@
 \usage{
 ensemblQueryLDwithSNPwindow(
   rsid,
-  r2 = 0.8,
-  d.prime = 0.8,
-  window.size = 500,
-  pop = "1000GENOMES:phase_3:EUR"
+  pop = "1000GENOMES:phase_3:EUR",
+  r2 = NA,
+  d.prime = NA,
+  window.size = NA
 )
 }
 \arguments{
 \item{rsid}{String. Variant ID.}
+
+\item{pop}{String. Population for which to compute LD. Use `ensemblQueryGetPops()` to retrieve a list of all populations with LD data. Default is 1000GENOMES:phase_3:EUR.}
 
 \item{r2}{Float. Measure of LD. If r-squared is provided only return pairs of variants whose r-squared value is equal to or greater than the value provided.}
 
 \item{d.prime}{Float. Measure of LD. If D' is provided only return pairs of variants whose D' value is equal to or greater than the value provided.}
 
 \item{window.size}{Integer. Window size in kb. The maximum allowed value for the window size is 500 kb. LD is computed for the given variant and all variants that are located within the specified window.}
-
-\item{pop}{String. Population for which to compute LD. Use `ensemblQueryGetPops()` to retrieve a list of all populations with LD data. Default is 1000GENOMES:phase_3:EUR.}
 }
 \value{
 A dataframe.

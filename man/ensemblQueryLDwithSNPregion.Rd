@@ -25,7 +25,7 @@ Function to query Ensembl LD data within a genomic window to get all variant pai
 ensemblQueryLDwithSNPregion(
 chr="6",
 start="25837556",
-end="25883455",
+end="25843455",
 pop="1000GENOMES:phase_3:EUR"
 )
 
