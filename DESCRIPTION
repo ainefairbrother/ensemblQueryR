@@ -18,6 +18,7 @@ Imports:
     rlang,
     tibble,
     tidyr,
+    utils,
     vroom,
     xml2
 Suggests: 

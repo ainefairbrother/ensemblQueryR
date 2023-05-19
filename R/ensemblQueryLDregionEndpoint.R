@@ -136,6 +136,7 @@ ensemblQueryLDwithSNPregion = function(chr, start, end, pop="1000GENOMES:phase_3
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' library(magrittr)
 #'
 #' data.frame(
@@ -148,7 +149,7 @@ ensemblQueryLDwithSNPregion = function(chr, start, end, pop="1000GENOMES:phase_3
 #'     pop="1000GENOMES:phase_3:EUR",
 #'     cores = 1
 #'   )
-#'
+#'}
 ensemblQueryLDwithSNPregionDataframe = function(in.table, pop="1000GENOMES:phase_3:EUR", cores=1){
 
   # # Test

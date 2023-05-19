@@ -135,6 +135,7 @@ ensemblQueryLDwithSNPwindow = function(rsid, pop="1000GENOMES:phase_3:EUR", r2=N
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' in.table = data.frame(rsid = rep(c("rs7153434","rs1963154","rs12672022",
 #'                                    "rs3852802","rs12324408","rs56346870"), 5))
 #'
@@ -144,7 +145,7 @@ ensemblQueryLDwithSNPwindow = function(rsid, pop="1000GENOMES:phase_3:EUR", r2=N
 #'                                      d.prime=0.8,
 #'                                      window.size=500,
 #'                                      cores=1)
-#'
+#'}
 ensemblQueryLDwithSNPwindowDataframe = function(in.table, pop="1000GENOMES:phase_3:EUR", r2=NA, d.prime=NA, window.size=NA, cores=1){
 
   #------------------------------ test -------------------------------
