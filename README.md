@@ -145,7 +145,7 @@ docker exec -i -t ensemblqueryr R
 
 ## Singularity 
 
-For HPC use-cases where Docker becomes problematic owing to user privileges, we have provided a [singularity](https://docs.sylabs.io/guides/latest/user-guide/quick_start.html) image. This can be found [here](https://cloud.sylabs.io/library/ainefairbrother/ensemblqueryr/ensemblqueryr). As long as you have singularity installed, the code below will allow you to pull this image, run a container and execute it. You will then be able to use `ensemblQueryR` as described above. A working installation of singularity is required. 
+For HPC use-cases where Docker usage becomes problematic owing to user privilege limitations, we have provided a [singularity](https://docs.sylabs.io/guides/latest/user-guide/quick_start.html) image. This can be found [here](https://cloud.sylabs.io/library/ainefairbrother/ensemblqueryr/ensemblqueryr). The code below will allow you to pull this image, run a container and execute it. You will then be able to use `ensemblQueryR` as described above. A working installation of singularity is required. 
 
 ```bash
 singularity pull --arch amd64 library://ainefairbrother/ensemblqueryr/ensemblqueryr:sha256.e387ea11ae4eaea8f94d81c625c2c1d5a22dd351858ebcd03910a7736d76ca30; \
