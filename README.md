@@ -127,12 +127,21 @@ ensemblQueryR::ensemblQueryLDwithSNPregionDataframe(
 
 ## Docker
 
-We have provided a Docker image, enabling this tool to be run regardless of your local operating system or R version. This can be found [here](https://hub.docker.com/r/ainefairbrotherbrowne/ensemblqueryr/tags). As long as you have Docker installed, the code below will allow you to pull this image, run a container and execute it. You will then be able to use `ensemblQueryR` as described above. 
+We have provided a [Docker](https://www.docker.com/) image, enabling this tool to be run regardless of your local operating system or R version. This can be found [here](https://hub.docker.com/r/ainefairbrotherbrowne/ensemblqueryr/tags). As long as you have Docker installed, the code below will allow you to pull this image, run a container and execute it. You will then be able to use `ensemblQueryR` as described above. A working installation of Docker is required. 
 
 ```bash
 docker pull ainefairbrotherbrowne/ensemblqueryr:1.0; \
 docker run -t -d --name ensemblqueryr ainefairbrotherbrowne/ensemblqueryr:1.0; \ 
 docker exec -i -t ensemblqueryr R
+```
+
+## Singularity 
+
+Aditionally, for HPC use-cases, we have provided a [singularity](https://docs.sylabs.io/guides/latest/user-guide/quick_start.html) image. This can be found [here](https://cloud.sylabs.io/library/ainefairbrother/ensemblqueryr/ensemblqueryr). As long as you have singularity installed, the code below will allow you to pull this image, run a container and execute it. You will then be able to use `ensemblQueryR` as described above. A working installation of singularity is required. 
+
+```bash
+singularity pull --arch amd64 library://ainefairbrother/ensemblqueryr/ensemblqueryr:sha256.e387ea11ae4eaea8f94d81c625c2c1d5a22dd351858ebcd03910a7736d76ca30; \
+singularity exec ensemblqueryr_sha256.e387ea11ae4eaea8f94d81c625c2c1d5a22dd351858ebcd03910a7736d76ca30.sif R
 ```
 
 ## Disclaimer
