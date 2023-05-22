@@ -33,14 +33,15 @@ A dataframe.
 `ensemblQueryLDwithSNPwindowDataframe` applies `ensemblQueryLDwithSNPwindow` to a data.frame of rsIDs.
 }
 \examples{
+\dontrun{
 in.table = data.frame(rsid = rep(c("rs7153434","rs1963154","rs12672022",
-                                   "rs3852802","rs12324408","rs56346870"), 10))
+                                   "rs3852802","rs12324408","rs56346870"), 5))
 
 ensemblQueryLDwithSNPwindowDataframe(in.table=in.table,
+                                     pop="1000GENOMES:phase_3:EUR",
                                      r2=0.8,
                                      d.prime=0.8,
                                      window.size=500,
-                                     pop="1000GENOMES:phase_3:EUR",
-                                     cores=2)
-
+                                     cores=1)
+}
 }

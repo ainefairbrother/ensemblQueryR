@@ -24,17 +24,18 @@ A dataframe.
 `ensemblQueryLDwithSNPregionDataframe` applies `ensemblQueryLDwithSNPregion` to a data.frame of genomic coordinates and returns all variant pairs present in each specified genomic region and their associated LD metrics.
 }
 \examples{
+\dontrun{
 library(magrittr)
 
 data.frame(
-  chr=rep(c("6"), 10),
-  start=rep(c("25837556"), 10),
-  end=rep(c("25943455"), 10)
+  chr=rep(c("6"), 5),
+  start=rep(c("25837556"), 5),
+  end=rep(c("25943455"), 5)
 ) \%>\%
   ensemblQueryLDwithSNPregionDataframe(
     in.table=.,
     pop="1000GENOMES:phase_3:EUR",
-    cores = 2
+    cores = 1
   )
-
+}
 }

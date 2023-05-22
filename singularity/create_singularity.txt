@@ -1,0 +1,8 @@
+# Commands run to convert the Docker image to a singularity image
+
+docker pull quay.io/singularity/docker2singularity
+docker run quay.io/singularity/docker2singularity
+cd ~/projects/ensemblQueryR
+mkdir singularity
+docker run -v /var/run/docker.sock:/var/run/docker.sock -v /singularity:/output --privileged -t --rm quay.io/singularity/docker2singularity ubuntu:20.04
+
