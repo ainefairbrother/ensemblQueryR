@@ -1,8 +1,22 @@
 # Commands run to convert the Docker image to a singularity image
 
+# pull the tool image (Docker)
 docker pull quay.io/singularity/docker2singularity
 docker run quay.io/singularity/docker2singularity
 cd ~/projects/ensemblQueryR
 mkdir singularity
-docker run -v /var/run/docker.sock:/var/run/docker.sock -v /singularity:/output --privileged -t --rm quay.io/singularity/docker2singularity ubuntu:20.04
+
+# run the conversion tool (Docker)
+docker run -v /var/run/docker.sock:/var/run/docker.sock -v /home/abrowne/projects/ensemblQueryR/singularity:/output --privileged -t --rm quay.io/singularity/docker2singularity ainefairbrotherbrowne/ensemblqueryr:1.0
+
+# test singularity img
+singularity shell ainefairbrotherbrowne_ensemblqueryr_1.0-2023-05-06-54036fc7706b.sif
+
+# push to singularity repo
+singularity remote login
+singularity push -U ainefairbrotherbrowne_ensemblqueryr_1.0-2023-05-22-ad7fcc3cb2f5.sif library://ainefairbrother/ensemblqueryr/ensemblqueryr
+
+# then to use...
+singularity pull --arch amd64 library://ainefairbrother/ensemblqueryr/ensemblqueryr:sha256.e387ea11ae4eaea8f94d81c625c2c1d5a22dd351858ebcd03910a7736d76ca30
+singularity run library://ainefairbrother/ensemblqueryr/ensemblqueryr:sha256.e387ea11ae4eaea8f94d81c625c2c1d5a22dd351858ebcd03910a7736d76ca30
 

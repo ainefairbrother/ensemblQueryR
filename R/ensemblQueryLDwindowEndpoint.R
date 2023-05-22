@@ -86,8 +86,8 @@ ensemblQueryLDwithSNPwindow = function(rsid, pop="1000GENOMES:phase_3:EUR", r2=N
         `rownames<-`(NULL) %>%
         as.data.frame() %>%
         dplyr::rename(query=variation1, snp_in_ld=variation2) %>%
+        tidyr::unnest(cols = c(query, snp_in_ld, r2, d_prime, population_name)) %>%
         dplyr::relocate(query, snp_in_ld, r2, d_prime, population_name) %>%
-        dplyr::mutate(query=rsid) %>%
         tibble::tibble() %>%
         return()
     } else{
@@ -96,6 +96,7 @@ ensemblQueryLDwithSNPwindow = function(rsid, pop="1000GENOMES:phase_3:EUR", r2=N
         data.frame() %>%
         dplyr::arrange(r2) %>%
         dplyr::rename(query=variation1, snp_in_ld=variation2) %>%
+        tidyr::unnest(cols = c(query, snp_in_ld, r2, d_prime, population_name)) %>%
         dplyr::relocate(query, snp_in_ld, r2, d_prime, population_name) %>%
         tibble::tibble() %>%
         return()
@@ -109,8 +110,8 @@ ensemblQueryLDwithSNPwindow = function(rsid, pop="1000GENOMES:phase_3:EUR", r2=N
         `rownames<-`(NULL) %>%
         as.data.frame() %>%
         dplyr::rename(query=variation1, snp_in_ld=variation2) %>%
+        tidyr::unnest(cols = c(query, snp_in_ld, r2, d_prime, population_name)) %>%
         dplyr::relocate(query, snp_in_ld, r2, d_prime, population_name) %>%
-        dplyr::mutate(query=rsid) %>%
         tibble::tibble() %>%
         return()
     }

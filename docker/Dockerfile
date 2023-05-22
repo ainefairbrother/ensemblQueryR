@@ -44,7 +44,7 @@ library(magrittr); \
 library(parallel)"
 
 # install and load ensemblQueryR (install from clone), then clean up after installer
-RUN apt-get install -y git \
-&& rm -rf /var/lib/apt/lists/*
+RUN apt-get install -y git
 RUN git clone https://github.com/ainefairbrother/ensemblQueryR.git ./ensemblQueryR
 RUN R -e "install.packages('devtools'); devtools::install('./ensemblQueryR'); library(ensemblQueryR)"
+RUN rm -rf /var/lib/apt/lists/*

@@ -82,6 +82,7 @@ ensemblQueryLDwithSNPpair = function(rsid1, rsid2, pop="1000GENOMES:phase_3:EUR"
         `rownames<-`(NULL) %>%
         as.data.frame() %>%
         dplyr::rename(query1=variation1, query2=variation2) %>%
+        tidyr::unnest(cols=c(query1, query2, r2, d_prime, population_name)) %>%
         dplyr::relocate(query1, query2, r2, d_prime, population_name) %>%
         tibble::tibble() %>%
         return()

@@ -17,3 +17,4 @@ ensemblQueryR.Rproj
 rprof.log
 CRAN-SUBMISSION
 cran-commends.md
+./singularity/*.sif
