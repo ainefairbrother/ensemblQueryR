@@ -43,8 +43,10 @@ library(vroom); \
 library(magrittr); \
 library(parallel)"
 
-# install and load ensemblQueryR (install from clone), then clean up after installer
+# install and load ensemblQueryR (install from clone)
 RUN apt-get install -y git
 RUN git clone https://github.com/ainefairbrother/ensemblQueryR.git ./ensemblQueryR
 RUN R -e "install.packages('devtools'); devtools::install('./ensemblQueryR'); library(ensemblQueryR)"
+
+# clean up after installer
 RUN rm -rf /var/lib/apt/lists/*
