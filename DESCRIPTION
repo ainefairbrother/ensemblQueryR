@@ -4,7 +4,7 @@ Title: Simple, Fast and Efficient Querying of the Ensembl API
 Version: 0.1.0
 Author: Aine Fairbrother-Browne
 Maintainer: Aine Fairbrother-Browne <ucbtas8@ucl.ac.uk>
-Description: Simple, Fast and Efficient Querying of the Ensembl API.
+Description: Suite of tools to enable fast, efficient, high-throughput, R workflow integrable querying of 'Ensembl' REST API endpoints (<https://rest.ensembl.org/>).
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.2.1
