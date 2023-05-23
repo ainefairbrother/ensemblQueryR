@@ -1,6 +1,6 @@
 Package: ensemblQueryR
 Type: Package
-Title: Simple, Fast and Efficient Querying of the Ensembl API
+Title: Simple, Fast and Efficient Querying of the 'Ensembl' API
 Version: 0.1.0
 Author: Aine Fairbrother-Browne
 Maintainer: Aine Fairbrother-Browne <ucbtas8@ucl.ac.uk>
