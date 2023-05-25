@@ -2,6 +2,7 @@
 <!-- badges: start -->
 
 [![DOI](https://zenodo.org/badge/562138040.svg)](https://zenodo.org/badge/latestdoi/562138040)
+[![HitCount](https://hits.dwyl.com/dwyl/start-here.svg)](https://hits.dwyl.com/dwyl/start-here)
 
 <!-- badges: end -->
 
