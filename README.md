@@ -119,7 +119,7 @@ in.table = data.frame(chr=rep(c("6"), 10),
                        
 # run query on in.table
 ensemblQueryR::ensemblQueryLDwithSNPregionDataframe(
-  in.table= ,
+  in.table= in.table,
   pop="1000GENOMES:phase_3:EUR",
   cores = 2
 )
