@@ -18,3 +18,4 @@ rprof.log
 CRAN-SUBMISSION
 cran-commends.md
 ./singularity/*.sif
+/R/updatePackage.R

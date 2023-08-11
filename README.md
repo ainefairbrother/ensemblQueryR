@@ -92,7 +92,6 @@ in.table <- data.frame(rsid1=rep("rs6792369", 10), rsid2=rep("rs1042779", 10))
 ensemblQueryR::ensemblQueryLDwithSNPpairDataframe(
   in.table=in.table,
   pop="1000GENOMES:phase_3:EUR",
-  keep.original.table.row.n=F,
   cores=1
 )
 ```
