@@ -48,7 +48,9 @@ pingEnsembl = function(){
   response = jsonlite::fromJSON(jsonlite::toJSON(content(r)))$ping
 
   if(response==1){
-    print("Server OK.")
+    message("Server OK.")
+  } else{
+    message("Server may be experiencing issues.")
   }
 
   return(response)

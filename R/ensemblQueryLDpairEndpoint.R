@@ -147,8 +147,8 @@ ensemblQueryLDwithSNPpairDataframe = function(in.table, pop="1000GENOMES:phase_3
   #
   # in.table=data.frame(rsid1=rep("rs6792369", 10), rsid2=rep("rs1042779", 10))
   # pop="1000GENOMES:phase_3:EUR"
-  # keep.original.table.row.n=FALSE
-  # cores=2
+  # cores=1
+
   #------------------------------ check inputs -------------------------------
 
   stopifnot(is.data.frame(in.table))
@@ -173,7 +173,7 @@ ensemblQueryLDwithSNPpairDataframe = function(in.table, pop="1000GENOMES:phase_3
           ))
         }
 
-        res = parallel::mclapply(X=c(1:nrow(in.table)), mc.cores=cores, FUN=function(x){
+        parallel::mclapply(X=c(1:nrow(in.table)), mc.cores=cores, FUN=function(x){
 
           ensemblQueryLDwithSNPpair(rsid1=in.table$rsid1[x],
                                     rsid2=in.table$rsid2[x],
@@ -191,7 +191,7 @@ ensemblQueryLDwithSNPpairDataframe = function(in.table, pop="1000GENOMES:phase_3
 
           message("Windows OS detected. Cannot run parallel queries using parallel::mclapply. Using lapply instead.")
 
-          res = lapply(X=c(1:nrow(in.table)), FUN=function(x){
+          lapply(X=c(1:nrow(in.table)), FUN=function(x){
 
             ensemblQueryLDwithSNPpair(rsid1=in.table$rsid1[x],
                                       rsid2=in.table$rsid2[x],

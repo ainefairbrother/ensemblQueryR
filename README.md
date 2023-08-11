@@ -153,6 +153,20 @@ singularity pull --arch amd64 library://ainefairbrother/ensemblqueryr/ensemblque
 singularity exec ensemblqueryr_sha256.e387ea11ae4eaea8f94d81c625c2c1d5a22dd351858ebcd03910a7736d76ca30.sif R
 ```
 
+## Contribute to `ensemblQueryR`
+
+We value contributions from the community to improve `ensemblQueryR`. Here's how you can do this:\
+* Explore Issues: Look through our GitHub Issues to find tasks, bugs, or new features you're interested in.\
+* Fork the Repository: Fork the `ensemblQueryR` repository to your GitHub account using the "Fork" button at the top.\
+* Branch Out: Create a new branch in your forked repository for your changes. Use a descriptive name for clarity.\
+* Make Changes: Make your code, documentation, or design updates in the branch you've created.\
+* Commit and Push: Commit your changes and push them to your forked repository.\
+* Open a Pull Request (PR): Submit a PR from your branch to the main repository. Provide a clear title and description of your changes.\
+* Engage in Discussion: Participate in the conversation around your PR. Address feedback and make necessary adjustments.\
+* Collaborate: Collaborate with our maintainers to refine your contribution. Once approved, your changes will be merged.\
+
+Thank you for considering making a contribution to `ensemblQueryR`.
+
 ## Disclaimer
 
 Please note that this code is still under development and may contain bugs or errors. It is not recommended for use in production environments. Use at your own risk. I am working on improving the code, addressing any issues, and expanding the package's capabilities so please check back for updates.

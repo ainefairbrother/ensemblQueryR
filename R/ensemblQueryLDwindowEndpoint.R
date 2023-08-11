@@ -25,8 +25,8 @@
 #'
 ensemblQueryLDwithSNPwindow = function(rsid, pop="1000GENOMES:phase_3:EUR", r2=NA, d.prime=NA, window.size=NA){
 
-  # TEST
-  # load libs
+  # # TEST
+  # # load libs
   # require(httr)
   # require(xml2)
   # if( !("tidyverse" %in% (.packages())) ){
@@ -38,10 +38,10 @@ ensemblQueryLDwithSNPwindow = function(rsid, pop="1000GENOMES:phase_3:EUR", r2=N
   # require(vroom)
   # require(magrittr)
   #
-  # rsid="rs1042779"
-  # r2=NA
-  # d.prime=NA
-  # window.size=NA
+  # rsid="rs4129267"
+  # r2=0.2
+  # d.prime=0.2
+  # window.size=500
   # pop="1000GENOMES:phase_3:EUR"
 
   #------------------------------ check inputs -------------------------------
@@ -55,8 +55,8 @@ ensemblQueryLDwithSNPwindow = function(rsid, pop="1000GENOMES:phase_3:EUR", r2=N
   #--------------------------------- run query -------------------------------
 
   if(is.na(r2)){r2=""}else{r2=paste0(";r2=",r2)}
-  if(is.na(d.prime)){d.prime=""}else{d.prime=paste0(";r2=",d.prime)}
-  if(is.na(window.size)){window.size=""}else{window.size=paste0("r2=",window.size)}
+  if(is.na(d.prime)){d.prime=""}else{d.prime=paste0(";d_prime=",d.prime)}
+  if(is.na(window.size)){window.size=""}else{window.size=paste0("window_size=",window.size)}
 
   server <- "https://rest.ensembl.org"
   ext <- paste0("/ld/human/",rsid,"/",pop,"?",window.size,r2,d.prime)
