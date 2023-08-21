@@ -4,8 +4,8 @@
 \name{ensemblQueryR-package}
 \alias{ensemblQueryR}
 \alias{ensemblQueryR-package}
-\title{ensemblQueryR: Simple, Fast and Efficient Querying of the Ensembl API}
+\title{ensemblQueryR: Simple, Fast and Efficient Querying of the 'Ensembl' API}
 \description{
-Simple, Fast and Efficient Querying of the Ensembl API.
+Suite of tools to enable fast, efficient, high-throughput, R workflow integrable querying of 'Ensembl' REST API endpoints (\url{https://rest.ensembl.org/}).
 }
 \keyword{internal}

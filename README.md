@@ -2,7 +2,6 @@
 <!-- badges: start -->
 
 [![DOI](https://zenodo.org/badge/562138040.svg)](https://zenodo.org/badge/latestdoi/562138040)
-[![HitCount](https://hits.dwyl.com/dwyl/start-here.svg)](https://hits.dwyl.com/dwyl/start-here)
 
 <!-- badges: end -->
 
@@ -154,15 +153,15 @@ singularity exec ensemblqueryr_sha256.e387ea11ae4eaea8f94d81c625c2c1d5a22dd35185
 
 ## Contribute to `ensemblQueryR`
 
-We value contributions from the community to improve `ensemblQueryR`. Here's how you can do this:\
-* Explore Issues: Look through our GitHub Issues to find tasks, bugs, or new features you're interested in.\
-* Fork the Repository: Fork the `ensemblQueryR` repository to your GitHub account using the "Fork" button at the top.\
-* Branch Out: Create a new branch in your forked repository for your changes. Use a descriptive name for clarity.\
-* Make Changes: Make your code, documentation, or design updates in the branch you've created.\
-* Commit and Push: Commit your changes and push them to your forked repository.\
-* Open a Pull Request (PR): Submit a PR from your branch to the main repository. Provide a clear title and description of your changes.\
-* Engage in Discussion: Participate in the conversation around your PR. Address feedback and make necessary adjustments.\
-* Collaborate: Collaborate with our maintainers to refine your contribution. Once approved, your changes will be merged.\
+We value contributions from the community to improve `ensemblQueryR`. Here's how you can do this:
+* Explore Issues: Look through our GitHub Issues to find tasks, bugs, or new features you're interested in.
+* Fork the Repository: Fork the `ensemblQueryR` repository to your GitHub account using the "Fork" button at the top.
+* Branch Out: Create a new branch in your forked repository for your changes. Use a descriptive name for clarity.
+* Make Changes: Make your code, documentation, or design updates in the branch you've created.
+* Commit and Push: Commit your changes and push them to your forked repository.
+* Open a Pull Request (PR): Submit a PR from your branch to the main repository. Provide a clear title and description of your changes.
+* Engage in Discussion: Participate in the conversation around your PR. Address feedback and make necessary adjustments.
+* Collaborate: Collaborate with our maintainers to refine your contribution. Once approved, your changes will be merged.
 
 Thank you for considering making a contribution to `ensemblQueryR`.
 
