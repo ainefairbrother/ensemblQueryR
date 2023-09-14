@@ -222,10 +222,10 @@ speed.line = list.files("/home/abrowne/projects/ensemblQueryR/benchmarking/resul
     plot = .,
     device = "png",
     scale = 1,
-    width = 7,
+    width = 8.5,
     height = 3.5,
     units = c("in"),
-    dpi = 300
+    dpi = 600
   )
 
 # -- 5. Check how many 10K LDpair runs failed --------------------------------------------
