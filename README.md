@@ -21,9 +21,6 @@ library(remotes)
 
 # to install the development version
 remotes::install_github("ainefairbrother/ensemblQueryR")
-
-# to install the stable CRAN release
-install.packages("ensemblQueryR")
 ```
 
 ## Setup 
